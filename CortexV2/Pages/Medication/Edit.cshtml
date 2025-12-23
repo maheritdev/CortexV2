@@ -1,0 +1,78 @@
+﻿@page
+@model Cortex.Pages.Medication.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>Medication</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Medication.MedicationId" />
+            <div class="form-group">
+                <label asp-for="Medication.Name" class="control-label"></label>
+                <input asp-for="Medication.Name" class="form-control" />
+                <span asp-validation-for="Medication.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Medication.GenericName" class="control-label"></label>
+                <input asp-for="Medication.GenericName" class="form-control" />
+                <span asp-validation-for="Medication.GenericName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Medication.Manufacturer" class="control-label"></label>
+                <input asp-for="Medication.Manufacturer" class="form-control" />
+                <span asp-validation-for="Medication.Manufacturer" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Medication.Description" class="control-label"></label>
+                <input asp-for="Medication.Description" class="form-control" />
+                <span asp-validation-for="Medication.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Medication.Category" class="control-label"></label>
+                <input asp-for="Medication.Category" class="form-control" />
+                <span asp-validation-for="Medication.Category" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Medication.UnitType" class="control-label"></label>
+                <input asp-for="Medication.UnitType" class="form-control" />
+                <span asp-validation-for="Medication.UnitType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Medication.UnitPrice" class="control-label"></label>
+                <input asp-for="Medication.UnitPrice" class="form-control" />
+                <span asp-validation-for="Medication.UnitPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Medication.ReorderLevel" class="control-label"></label>
+                <input asp-for="Medication.ReorderLevel" class="form-control" />
+                <span asp-validation-for="Medication.ReorderLevel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Medication.CurrentStock" class="control-label"></label>
+                <input asp-for="Medication.CurrentStock" class="form-control" />
+                <span asp-validation-for="Medication.CurrentStock" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Medication.Status" class="control-label"></label>
+                <input asp-for="Medication.Status" class="form-control" />
+                <span asp-validation-for="Medication.Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+

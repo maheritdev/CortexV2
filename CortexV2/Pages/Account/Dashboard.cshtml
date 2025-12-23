@@ -1,0 +1,324 @@
+﻿@page "/Account/Dashboard"
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@inject IHttpContextAccessor HttpContextAccessor
+@model Cortex.UI.Areas.Web.Pages.Account.DashboardModel
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@{
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+
+    ViewData["Title"] = "Dashboard";
+}
+
+
+<!-- Main Content -->
+<div id="content">
+    <!-- Dashboard Content -->
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
+            </a>
+        </div>
+
+        <!-- Statistics Row -->
+        <div class="row">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow h-100 py-2 card-stat">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Patients
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Dashboard.TotalPatients</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-user-injured fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow h-100 py-2 card-stat">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Today's Appointments
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Dashboard.TodaysAppointments</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow h-100 py-2 card-stat">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Available Rooms
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Dashboard.AvailableRooms/120</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-bed fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow h-100 py-2 card-stat">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Pending Bills
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Dashboard.PendingBills</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modules Grid -->
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">System Modules</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Patient Management -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card bg-patient module-card">
+                                    <div class="card-body text-center">
+                                        <div class="module-icon">
+                                            <i class="fas fa-user-injured"></i>
+                                        </div>
+                                        <h5 class="card-title">Patients Management</h5>
+                                        <p class="card-text">Manage patient records, admissions and medical history</p>
+                                        <a href="../Patients" class="btn btn-sm btn-primary">Access Module</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Appointments -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card bg-appointment module-card">
+                                    <div class="card-body text-center">
+                                        <div class="module-icon">
+                                            <i class="fas fa-calendar-check"></i>
+                                        </div>
+                                        <h5 class="card-title">Appointments</h5>
+                                        <p class="card-text">Schedule and manage patient appointments</p>
+                                         <a href="../Appointment" class="btn btn-sm btn-primary">Access Module</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Staff Management -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card module-card">
+                                    <div class="card-body text-center">
+                                        <div class="module-icon">
+                                            <i class="fas fa-user-md"></i>
+                                        </div>
+                                        <h5 class="card-title">Staff Management</h5>
+                                        <p class="card-text">Manage doctors, staff and departments</p>
+                                        <a href="../Staff" class="btn btn-sm btn-primary">Access Module</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Billing -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card bg-billing module-card">
+                                    <div class="card-body text-center">
+                                        <div class="module-icon">
+                                            <i class="fas fa-money-bill-wave"></i>
+                                        </div>
+                                        <h5 class="card-title">Billing & Payments</h5>
+                                        <p class="card-text">Manage billing, payments and financial records</p>
+                                        <a href="../Billing" class="btn btn-sm btn-primary">Access Module</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pharmacy -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card module-card">
+                                    <div class="card-body text-center">
+                                        <div class="module-icon">
+                                            <i class="fas fa-pills"></i>
+                                        </div>
+                                        <h5 class="card-title">Pharmacy</h5>
+                                        <p class="card-text">Manage prescriptions and medications</p>
+                                        <a href="../Medication" class="btn btn-sm btn-primary">Access Module</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Laboratory -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card module-card">
+                                    <div class="card-body text-center">
+                                        <div class="module-icon">
+                                            <i class="fas fa-microscope"></i>
+                                        </div>
+                                        <h5 class="card-title">Laboratory</h5>
+                                        <p class="card-text">Manage lab tests and orders</p>
+                                        <a href="../Laborder" class="btn btn-sm btn-primary">Access Module</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Inventory -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card module-card">
+                                    <div class="card-body text-center">
+                                        <div class="module-icon">
+                                            <i class="fas fa-warehouse"></i>
+                                        </div>
+                                        <h5 class="card-title">Inventory</h5>
+                                        <p class="card-text">Manage hospital inventory and transactions</p>
+                                        <a href="../Inventory" class="btn btn-sm btn-primary">Access Module</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rooms -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card module-card">
+                                    <div class="card-body text-center">
+                                        <div class="module-icon">
+                                            <i class="fas fa-bed"></i>
+                                        </div>
+                                        <h5 class="card-title">Room Management</h5>
+                                        <p class="card-text">Manage room allocation and availability</p>
+                                        <a href="../Room" class="btn btn-sm btn-primary">Access Module</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity & Stats -->
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Recent Appointments</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Doctor</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appt in Model.Dashboard.RecentAppointments)
+                                    {
+                                        <tr>
+                                            <td>@appt.Patient</td>
+                                            <td>@appt.Doctor</td>
+                                            <td>@appt.Time.ToString("hh:mm tt")</td>
+                                            <td>@appt.Status</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">System Status</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <p class="mb-1">Server Uptime</p>
+                            <div class="progress mb-4">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 99.8%" aria-valuenow="99.8" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+
+                            <p class="mb-1">Storage Usage</p>
+                            <div class="progress mb-4">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+
+                            <p class="mb-1">Memory Usage</p>
+                            <div class="progress mb-4">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 42%" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+
+                            <p class="mb-1">Network Traffic</p>
+                            <div class="progress">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: 28%" aria-valuenow="28" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <div class="p-6 bg-white rounded shadow max-w-3xl mx-auto mt-8">
+    <h2 class="text-xl font-semibold">Welcome, @Model.DisplayName</h2>
+    <div class="mt-4">
+        <h3 class="font-medium">Profile</h3>
+        <dl class="grid grid-cols-1 gap-2 mt-2">
+            <div><strong>Type:</strong> @Model.UserType</div>
+            <div><strong>Token Expires At:</strong> @Model.TokenExpiry</div>
+            <div><strong>Token Expires At:</strong> @Model.Token</div>
+            <div><strong>Raw Token (hidden by default):</strong> <button class="ml-2 px-2 py-1 border" onclick="toggleToken">Show/Hide</button></div>
+            <div id="tokenBlock" style="display:none; word-break:break-all;">@Model.Token</div>
+        </dl>
+    </div>
+
+
+    <div class="mt-6">
+        <a asp-page="/Index" class="text-sm text-gray-500">Back to home</a>
+    </div>
+    <!-- Add this to your Dashboard.cshtml -->
+    <div class="mt-6">
+        <form method="post" asp-page-handler="Logout">
+            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded">Logout</button>
+        </form>
+        <a asp-page="/Index" class="text-sm text-gray-500">Back to home</a>
+    </div>
+</div>
+
+
+ *@

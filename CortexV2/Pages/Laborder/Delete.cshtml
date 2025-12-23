@@ -1,0 +1,53 @@
+﻿@page
+@model Cortex.Pages.Laborder.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>LabOrder</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LabOrder.OrderDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LabOrder.OrderDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LabOrder.Status)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LabOrder.Status)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LabOrder.Notes)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LabOrder.Notes)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LabOrder.Doctor)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LabOrder.Doctor.StaffID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LabOrder.Patient)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LabOrder.Patient.PatientId)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="LabOrder.OrderId" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>

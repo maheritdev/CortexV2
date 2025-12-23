@@ -1,0 +1,97 @@
+﻿@page
+@model Cortex.Pages.Inventory.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Inventory[0].ItemName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Inventory[0].Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Inventory[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Inventory[0].QuantityInStock)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Inventory[0].UnitOfMeasure)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Inventory[0].ReorderLevel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Inventory[0].UnitPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Inventory[0].Supplier)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Inventory[0].LastRestockedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Inventory[0].Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Inventory[0].LastUpdated)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Inventory) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QuantityInStock)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnitOfMeasure)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReorderLevel)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnitPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Supplier)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastRestockedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastUpdated)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.InventoryId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.InventoryId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.InventoryId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

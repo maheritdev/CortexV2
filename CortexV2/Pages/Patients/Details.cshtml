@@ -1,0 +1,348 @@
+﻿@page "{id:int}"
+@model Cortex.UI.Areas.Web.Pages.Patients.DetailsModel
+@{
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Patient Details";
+}
+
+<div class="min-vh-100 bg-light py-4">
+    <div class="container-fluid">
+        <!-- Header Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        @{
+                            var backUrl = Url.Page("./Index");
+                        }
+                        <a asp-route="@backUrl" class="btn btn-outline-secondary btn-sm me-3">
+                            <i class="fas fa-arrow-left me-2"></i>Back
+                        </a>
+                        <div>
+                            <h1 class="h2 mb-1 text-dark">Patient Details</h1>
+                            <p class="text-muted mb-0">Complete patient information and records</p>
+                        </div>
+                    </div>
+                    @{
+                        var editUrl = Url.Page("./Edit", new { id = Model.Patient?.PatientID, area = "Web" });
+                    }
+                    <a asp-route="@editUrl" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Edit Patient
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Card -->
+        <div class="card shadow-sm border-0">
+            <!-- Patient Header -->
+            <div class="card-header bg-primary bg-opacity-10 border-0 py-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-4"
+                                 style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: 600;">
+                                @Model.Patient?.FirstName?[0]@Model.Patient?.LastName?[0]
+                            </div>
+                            <div>
+                                <h2 class="h3 mb-1 text-dark">@Model.Patient?.FirstName @Model.Patient?.LastName</h2>
+                                <p class="text-muted mb-0">
+                                    @if (Model.Patient?.Gender != null)
+                                    {
+                                        <span class="text-capitalize">@Model.Patient.Gender.ToLower()
+                                            @if (Model.Patient?.Gender.ToLower() == "m") {
+                                                <i class="fa-solid fa-mars"></i>
+                                            }else{
+                                                <i class="fa-solid fa-venus"></i>
+                                            }
+                                        </span>
+                                    }
+                                    @if (Model.Patient?.DateOfBirth != null)
+                                    {
+                                        <span> | Age: @(DateTime.Now.Year - Model.Patient.DateOfBirth.Value.Year)</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <span class="bg-opacity-10 text-success fs-6">
+                            <i class="fas fa-circle me-1 small"></i>
+                             <span class="text-success">@(Model.Patient?.Status ?? "Active")</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="row">
+                    <!-- Personal Information -->
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-user-circle text-primary me-2 fs-5"></i>
+                            <h3 class="h5 mb-0 text-dark">Personal Information</h3>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Patient ID</span>
+                                <span class="fw-medium">#@Model.Patient?.PatientID</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Gender</span>
+                                <span class="fw-medium text-capitalize">@(Model.Patient?.Gender ?? "Not specified")</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Date of Birth</span>
+                                <span class="fw-medium">@(Model.Patient?.DateOfBirth?.ToString("MMM dd, yyyy") ?? "Not specified")</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Blood Type</span>
+                                <span class="fw-medium">@(Model.Patient?.BloodType ?? "Not specified")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-address-card text-primary me-2 fs-5"></i>
+                            <h3 class="h5 mb-0 text-dark">Contact Information</h3>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Email</span>
+                                <span class="fw-medium">@(Model.Patient?.Email ?? "Not specified")</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Phone</span>
+                                <span class="fw-medium">@Model.Patient?.ContactNumber</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Alternate Phone</span>
+                                <span class="fw-medium">@(Model.Patient?.AlternateContact ?? "Not specified")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Address Information -->
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-map-marker-alt text-primary me-2 fs-5"></i>
+                            <h3 class="h5 mb-0 text-dark">Address Information</h3>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item px-0">
+                                <div class="text-muted mb-1">Address</div>
+                                <div class="fw-medium">@Model.Patient?.Address</div>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">City</span>
+                                <span class="fw-medium">@(Model.Patient?.City ?? "Not specified")</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">State/Zip</span>
+                                <span class="fw-medium">@(Model.Patient?.State ?? "Not specified") @(Model.Patient?.ZipCode)</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Country</span>
+                                <span class="fw-medium">@(Model.Patient?.Country ?? "Not specified")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contact -->
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-exclamation-triangle text-primary me-2 fs-5"></i>
+                            <h3 class="h5 mb-0 text-dark">Emergency Contact</h3>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Name</span>
+                                <span class="fw-medium">@(Model.Patient?.EmergencyContactName ?? "Not specified")</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Phone</span>
+                                <span class="fw-medium">@(Model.Patient?.EmergencyContactNumber ?? "Not specified")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Insurance Information -->
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-shield-alt text-primary me-2 fs-5"></i>
+                            <h3 class="h5 mb-0 text-dark">Insurance Information</h3>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Provider</span>
+                                <span class="fw-medium">@(Model.Patient?.InsuranceProvider ?? "Not specified")</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Policy Number</span>
+                                <span class="fw-medium">@(Model.Patient?.InsurancePolicyNumber ?? "Not specified")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Registration Information -->
+                    <div class="col-md-6 mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-calendar-alt text-primary me-2 fs-5"></i>
+                            <h3 class="h5 mb-0 text-dark">Registration Information</h3>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Registration Date</span>
+                                <span class="fw-medium">@(Model.Patient?.RegistrationDate?.ToString("MMM dd, yyyy") ?? "Not specified")</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <span class="text-muted">Last Visit</span>
+                                <span class="fw-medium">@(Model.Patient?.LastVisitDate?.ToString("MMM dd, yyyy") ?? "No visits recorded")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical Information -->
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-file-medical text-primary me-2 fs-5"></i>
+                            <h3 class="h5 mb-0 text-dark">Medical Information</h3>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card bg-light border-0 h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-muted">Medical History</h6>
+                                        <p class="card-text">
+                                            @if (!string.IsNullOrEmpty(Model.Patient?.MedicalHistory))
+                                            {
+                                                @Model.Patient.MedicalHistory
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted fst-italic">No medical history recorded</span>
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light border-0 h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-muted">Allergies</h6>
+                                        <p class="card-text">
+                                            @if (!string.IsNullOrEmpty(Model.Patient?.Allergies))
+                                            {
+                                                @Model.Patient.Allergies
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted fst-italic">No allergies recorded</span>
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card-footer bg-light border-0 py-3">
+                <div class="d-flex flex-wrap gap-2">
+                    <a   class="btn btn-outline-primary">
+                        <i class="fas fa-file-medical me-2"></i>Medical Records (@Model.Patient?.MedicalRecords.Count)
+                    </a>
+                    <a  class="btn btn-outline-primary">
+                        <i class="fas fa-calendar-plus me-2"></i>Appointments (@Model.Patient?.Appointments.Count)
+                    </a>
+                    <a class="btn btn-outline-primary">
+                        <i class="fas fa-receipt me-2"></i>Billing (@Model.Patient?.Billings.Count)
+                    </a>
+                    <a  class="btn btn-outline-primary">
+                        <i class="fas fa-prescription me-2"></i>Prescriptions (@Model.Patient?.Prescriptions.Count)
+                    </a>
+                    <a  class="btn btn-outline-primary">
+                        <i class="fas fa-procedures me-2"></i>Admissions (@Model.Patient?.Admissions.Count)
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mt-4">
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calendar-check text-primary fs-1 mb-3"></i>
+                        <h5 class="card-title">Last Visit</h5>
+                        <p class="card-text text-muted">
+                            @(Model.Patient?.LastVisitDate?.ToString("MMM dd, yyyy") ?? "No visits")
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-stethoscope text-primary fs-1 mb-3"></i>
+                        <h5 class="card-title">Active Records</h5>
+                        <p class="card-text text-muted">@Model.Patient?.MedicalRecords.Count</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-pills text-primary fs-1 mb-3"></i>
+                        <h5 class="card-title">Prescriptions</h5>
+                        <p class="card-text text-muted">@Model.Patient?.Prescriptions.Count</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-heartbeat text-primary fs-1 mb-3"></i>
+                        <h5 class="card-title">Status</h5>
+                        <span class="badge bg-success">@(Model.Patient?.Status ?? "Active")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 0.75rem;
+        transition: transform 0.2s ease-in-out;
+    }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+    .list-group-item {
+        border-color: rgba(0,0,0,0.05);
+        padding: 0.75rem 0;
+    }
+
+    .bg-primary.bg-opacity-10 {
+        background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+    }
+
+    .btn {
+        border-radius: 0.5rem;
+        transition: all 0.2s ease-in-out;
+    }
+</style>

@@ -1,0 +1,18 @@
+﻿@page
+@model Cortex.Areas.Web.pages.Account.HomeModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="max-w-4xl mx-auto mt-12">
+    <div class="bg-white p-6 rounded shadow">
+        <h1 class="text-2xl font-bold">Cortex — Razor Pages UI</h1>
+        <p class="mt-3">This UI demonstrates authentication against the Cortex API using JWTs returned by the API. Use the Login page to sign in.</p>
+
+
+        <div class="mt-4 flex gap-3">
+            <a asp-page="/Account/Login" class="px-4 py-2 bg-indigo-600 text-white rounded">Login</a>
+            <a asp-page="/Dashboard" class="px-4 py-2 border rounded">Dashboard</a>
+        </div>
+    </div>
+</div>

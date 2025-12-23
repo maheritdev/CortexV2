@@ -1,0 +1,61 @@
+﻿@page
+@model Cortex.Pages.Department.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Department[0].DepartmentName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Department[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Department[0].Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Department[0].ContactNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Department[0].HeadOfDepartmentNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Department) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DepartmentName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Location)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HeadOfDepartmentNavigation.StaffID)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.DepartmentId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.DepartmentId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.DepartmentId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

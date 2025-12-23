@@ -1,0 +1,71 @@
+﻿@page
+@model Cortex.Pages.Inventory.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>Inventory</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Inventory.ItemName" class="control-label"></label>
+                <input asp-for="Inventory.ItemName" class="form-control" />
+                <span asp-validation-for="Inventory.ItemName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inventory.Category" class="control-label"></label>
+                <input asp-for="Inventory.Category" class="form-control" />
+                <span asp-validation-for="Inventory.Category" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inventory.Description" class="control-label"></label>
+                <input asp-for="Inventory.Description" class="form-control" />
+                <span asp-validation-for="Inventory.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inventory.UnitOfMeasure" class="control-label"></label>
+                <input asp-for="Inventory.UnitOfMeasure" class="form-control" />
+                <span asp-validation-for="Inventory.UnitOfMeasure" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inventory.ReorderLevel" class="control-label"></label>
+                <input asp-for="Inventory.ReorderLevel" class="form-control" />
+                <span asp-validation-for="Inventory.ReorderLevel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inventory.UnitPrice" class="control-label"></label>
+                <input asp-for="Inventory.UnitPrice" class="form-control" />
+                <span asp-validation-for="Inventory.UnitPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inventory.Supplier" class="control-label"></label>
+                <input asp-for="Inventory.Supplier" class="form-control" />
+                <span asp-validation-for="Inventory.Supplier" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inventory.LastRestockedDate" class="control-label"></label>
+                <input asp-for="Inventory.LastRestockedDate" class="form-control" />
+                <span asp-validation-for="Inventory.LastRestockedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inventory.LastUpdated" class="control-label"></label>
+                <input asp-for="Inventory.LastUpdated" class="form-control" />
+                <span asp-validation-for="Inventory.LastUpdated" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>

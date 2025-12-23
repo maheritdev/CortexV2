@@ -1,0 +1,52 @@
+﻿@page
+@model Cortex.Pages.Laborder.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>LabOrder</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="LabOrder.OrderId" />
+            <div class="form-group">
+                <label asp-for="LabOrder.PatientId" class="control-label"></label>
+                <select asp-for="LabOrder.PatientId" class="form-control" asp-items="ViewBag.PatientId"></select>
+                <span asp-validation-for="LabOrder.PatientId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LabOrder.DoctorId" class="control-label"></label>
+                <select asp-for="LabOrder.DoctorId" class="form-control" asp-items="ViewBag.DoctorId"></select>
+                <span asp-validation-for="LabOrder.DoctorId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LabOrder.OrderDate" class="control-label"></label>
+                <input asp-for="LabOrder.OrderDate" class="form-control" />
+                <span asp-validation-for="LabOrder.OrderDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LabOrder.Status" class="control-label"></label>
+                <input asp-for="LabOrder.Status" class="form-control" />
+                <span asp-validation-for="LabOrder.Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LabOrder.Notes" class="control-label"></label>
+                <input asp-for="LabOrder.Notes" class="form-control" />
+                <span asp-validation-for="LabOrder.Notes" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>

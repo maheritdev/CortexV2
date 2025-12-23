@@ -1,0 +1,153 @@
+﻿@page
+@model Cortex.UI.Areas.Web.Pages.Patients.CreateModel
+@{
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+    ViewData["Title"] = "Create Patient";
+}
+<div class="card shadow-sm border-0 my-4">
+    <div class="card-header bg-success text-white">
+        <h2 class="h5 mb-0">New Patient</h2>
+    </div>
+
+    <div class="card-body">
+        <form method="post">
+            @Html.AntiForgeryToken()
+
+            <!-- Validation summary -->
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <!-- First Name -->
+                <div class="col-md-6">
+                    <label asp-for="Input.FirstName" class="form-label">First Name</label>
+                    <input asp-for="Input.FirstName" class="form-control" name="FirstName" />
+                    <span asp-validation-for="Input.FirstName" class="text-danger small"></span>
+                </div>
+
+                <!-- Last Name -->
+                <div class="col-md-6">
+                    <label asp-for="Input.LastName" class="form-label">Last Name</label>
+                    <input asp-for="Input.LastName" class="form-control" name="LastName" />
+                    <span asp-validation-for="Input.LastName" class="text-danger small"></span>
+                </div>
+
+                <!-- Gender -->
+                <div class="col-md-6">
+                    <label asp-for="Input.Gender" class="form-label">Gender</label>
+                    <select asp-for="Input.Gender" class="form-select" name="Gender">
+                        <option value="">-- Select Gender --</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                    </select>
+                    <span asp-validation-for="Input.Gender" class="text-danger small"></span>
+                </div>
+
+                <!-- Date of Birth -->
+                <div class="col-md-6">
+                    <label asp-for="Input.DateOfBirth" class="form-label">Date of Birth</label>
+                    <input asp-for="Input.DateOfBirth" type="date" class="form-control" name="DateOfBirth" />
+                    <span asp-validation-for="Input.DateOfBirth" class="text-danger small"></span>
+                </div>
+
+                <!-- Blood Type -->
+                <div class="col-md-6">
+                    <label asp-for="Input.BloodType" class="form-label">Blood Type</label>
+                    <select asp-for="Input.BloodType" class="form-select" name="BloodType">
+                        <option value="">-- Select Blood Type --</option>
+                        <option>A+</option>
+                        <option>A-</option>
+                        <option>B+</option>
+                        <option>B-</option>
+                        <option>O+</option>
+                        <option>O-</option>
+                        <option>AB+</option>
+                        <option>AB-</option>
+                    </select>
+                    <span asp-validation-for="Input.BloodType" class="text-danger small"></span>
+                </div>
+
+                <!-- Phone -->
+                <div class="col-md-6">
+                    <label asp-for="Input.ContactNumber" class="form-label">Phone</label>
+                    <input asp-for="Input.ContactNumber" class="form-control" name="ContactNumber" />
+                    <span asp-validation-for="Input.ContactNumber" class="text-danger small"></span>
+                </div>
+
+                <!-- Alternate Phone -->
+                <div class="col-md-6">
+                    <label asp-for="Input.AlternateContact" class="form-label">Alternate Phone</label>
+                    <input asp-for="Input.AlternateContact" class="form-control" name="AlternateContact" />
+                    <span asp-validation-for="Input.AlternateContact" class="text-danger small"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6">
+                    <label asp-for="Input.Email" class="form-label">Email</label>
+                    <input asp-for="Input.Email" class="form-control" name="Email" />
+                    <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                </div>
+
+                <!-- Address -->
+                <div class="col-12">
+                    <label asp-for="Input.Address" class="form-label">Address</label>
+                    <input asp-for="Input.Address" class="form-control" name="Address" />
+                    <span asp-validation-for="Input.Address" class="text-danger small"></span>
+                </div>
+
+                <!-- City -->
+                <div class="col-md-6">
+                    <label asp-for="Input.City" class="form-label">City</label>
+                    <input asp-for="Input.City" class="form-control" name="City" />
+                </div>
+@* 
+                <!-- State -->
+                <div class="col-md-6">
+                    <label asp-for="Input.State" class="form-label">State</label>
+                    <input asp-for="Input.State" class="form-control" />
+                </div> *@
+@* 
+                <!-- Zip Code -->
+                <div class="col-md-6">
+                    <label asp-for="Input.ZipCode" class="form-label">Zip Code</label>
+                    <input asp-for="Input.ZipCode" class="form-control" />
+                    <span asp-validation-for="Input.ZipCode" class="text-danger small"></span>
+                </div> *@
+
+                <!-- Country -->
+                <div class="col-md-6">
+                    <label asp-for="Input.Country" class="form-label">Country</label>
+                    <input asp-for="Input.Country" class="form-control" name="Country" />
+                </div>
+
+                <!-- Emergency Contact -->
+                <div class="col-md-6">
+                    <label asp-for="Input.EmergencyContactName" class="form-label">Emergency Contact Name</label>
+                    <input asp-for="Input.EmergencyContactName" class="form-control" name="EmergencyContactName" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Input.EmergencyContactNumber" class="form-label">Emergency Contact Number</label>
+                    <input asp-for="Input.EmergencyContactNumber" class="form-control" name="EmergencyContactNumber" />
+                    <span asp-validation-for="Input.EmergencyContactNumber" class="text-danger small"></span>
+                </div>
+
+                <!-- Insurance Provider -->
+                <div class="col-md-6">
+                    <label asp-for="Input.InsuranceProvider" class="form-label">Insurance Provider</label>
+                    <input asp-for="Input.InsuranceProvider" class="form-control" name="InsuranceProvider" />
+                </div>
+
+                <!-- Insurance Policy -->
+                <div class="col-md-6">
+                    <label asp-for="Input.InsurancePolicyNumber" class="form-label">Insurance Policy Number</label>
+                    <input asp-for="Input.InsurancePolicyNumber" class="form-control" name="InsurancePolicyNumber" />
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex justify-content-between">
+                <button type="submit" class="btn btn-success px-4">Create</button>
+                <a asp-page="./Index" asp-area="Web" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

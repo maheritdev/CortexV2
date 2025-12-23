@@ -1,0 +1,64 @@
+﻿@page
+@model Cortex.Pages.Billing.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>Billing</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Billing.PatientId" class="control-label"></label>
+                <select asp-for="Billing.PatientId" class ="form-control" asp-items="ViewBag.PatientId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Billing.DueDate" class="control-label"></label>
+                <input asp-for="Billing.DueDate" class="form-control" />
+                <span asp-validation-for="Billing.DueDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Billing.TotalAmount" class="control-label"></label>
+                <input asp-for="Billing.TotalAmount" class="form-control" />
+                <span asp-validation-for="Billing.TotalAmount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Billing.Balance" class="control-label"></label>
+                <input asp-for="Billing.Balance" class="form-control" />
+                <span asp-validation-for="Billing.Balance" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Billing.isPaid" class="control-label"></label>
+                <input asp-for="Billing.isPaid" class="form-control" />
+                <span asp-validation-for="Billing.isPaid" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Billing.Notes" class="control-label"></label>
+                <input asp-for="Billing.Notes" class="form-control" />
+                <span asp-validation-for="Billing.Notes" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Billing.CreatedBy" class="control-label"></label>
+                <select asp-for="Billing.CreatedBy" class ="form-control" asp-items="ViewBag.CreatedBy"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Billing.PaidDate" class="control-label"></label>
+                <input asp-for="Billing.PaidDate" class="form-control" />
+                <span asp-validation-for="Billing.PaidDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>

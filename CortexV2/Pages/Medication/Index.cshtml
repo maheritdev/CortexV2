@@ -1,0 +1,91 @@
+﻿@page
+@model Cortex.Pages.Medication.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Medication[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Medication[0].GenericName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Medication[0].Manufacturer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Medication[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Medication[0].Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Medication[0].UnitType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Medication[0].UnitPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Medication[0].ReorderLevel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Medication[0].CurrentStock)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Medication[0].Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Medication) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GenericName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Manufacturer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnitType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnitPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReorderLevel)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CurrentStock)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.MedicationId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.MedicationId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.MedicationId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
