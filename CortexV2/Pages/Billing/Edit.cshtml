@@ -2,86 +2,650 @@
 @model Cortex.Pages.Billing.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Invoice";
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
 }
 
-<h1>Edit</h1>
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a asp-page="/Index">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-page="Index">Billing</a></li>
+                    <li class="breadcrumb-item"><a asp-page="./Details" asp-route-id="@Model.Billing.BillId">Invoice #@Model.Billing.BillId</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-1">Edit Invoice</h1>
+            <p class="text-muted mb-0">Update invoice #@Model.Billing.BillId details</p>
+        </div>
+        <div>
+            <a asp-page="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
 
-<h4>Billing</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Billing.BillId" />
-            <div class="form-group">
-                <label asp-for="Billing.PatientId" class="control-label"></label>
-                <select asp-for="Billing.PatientId" class="form-control" asp-items="ViewBag.PatientId"></select>
-                <span asp-validation-for="Billing.PatientId" class="text-danger"></span>
+    <div class="row">
+        <!-- Main Form -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>
+                        Edit Invoice Details
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="editBillingForm">
+                        <input type="hidden" asp-for="Billing.BillId" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="row g-4">
+                            <!-- Patient Selection -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.PatientId" class="form-label fw-semibold">
+                                        <i class="fas fa-user-injured me-1"></i>Patient
+                                    </label>
+                                    <select asp-for="Billing.PatientId" class="form-select" asp-items="ViewBag.PatientId">
+                                        <option value="">-- Select Patient --</option>
+                                    </select>
+                                    <span asp-validation-for="Billing.PatientId" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Dates Section -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.BillDate" class="form-label fw-semibold">
+                                        <i class="fas fa-calendar-day me-1"></i>Bill Date
+                                    </label>
+                                    <input asp-for="Billing.BillDate" type="date" class="form-control" />
+                                    <span asp-validation-for="Billing.BillDate" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.DueDate" class="form-label fw-semibold">
+                                        <i class="fas fa-calendar-alt me-1"></i>Due Date
+                                    </label>
+                                    <input asp-for="Billing.DueDate" type="date" class="form-control" />
+                                    <span asp-validation-for="Billing.DueDate" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.PaidDate" class="form-label fw-semibold">
+                                        <i class="fas fa-calendar-check me-1"></i>Paid Date
+                                    </label>
+                                    <input asp-for="Billing.PaidDate" type="date" class="form-control" />
+                                    <span asp-validation-for="Billing.PaidDate" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Amounts Section -->
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.TotalAmount" class="form-label fw-semibold">
+                                        <i class="fas fa-money-bill-wave me-1"></i>Total Amount ($)
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="Billing.TotalAmount" type="number" step="0.01" min="0"
+                                               class="form-control" id="totalAmount" />
+                                    </div>
+                                    <span asp-validation-for="Billing.TotalAmount" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.PaidAmount" class="form-label fw-semibold">
+                                        <i class="fas fa-money-check me-1"></i>Paid Amount ($)
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="Billing.PaidAmount" type="number" step="0.01" min="0"
+                                               class="form-control" id="paidAmount" />
+                                    </div>
+                                    <span asp-validation-for="Billing.PaidAmount" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.Balance" class="form-label fw-semibold">
+                                        <i class="fas fa-balance-scale me-1"></i>Balance ($)
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="Billing.Balance" type="number" step="0.01"
+                                               class="form-control" id="balanceAmount" readonly />
+                                    </div>
+                                    <span asp-validation-for="Billing.Balance" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Insurance Section -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.InsuranceClaimAmount" class="form-label fw-semibold">
+                                        <i class="fas fa-shield-alt me-1"></i>Insurance Claim Amount ($)
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="Billing.InsuranceClaimAmount" type="number" step="0.01" min="0"
+                                               class="form-control" />
+                                    </div>
+                                    <span asp-validation-for="Billing.InsuranceClaimAmount" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Created By -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.CreatedBy" class="form-label fw-semibold">
+                                        <i class="fas fa-user-edit me-1"></i>Created By
+                                    </label>
+                                    <select asp-for="Billing.CreatedBy" class="form-select" asp-items="ViewBag.CreatedBy">
+                                        <option value="">-- Select Staff --</option>
+                                    </select>
+                                    <span asp-validation-for="Billing.CreatedBy" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Payment Status -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-credit-card me-1"></i>Payment Status
+                                    </label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio"
+                                                   asp-for="Billing.isPaid" id="isPaidTrue"
+                                                   value="true">
+                                            <label class="form-check-label text-success" for="isPaidTrue">
+                                                <i class="fas fa-check-circle me-1"></i>Paid
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio"
+                                                   asp-for="Billing.isPaid" id="isPaidFalse"
+                                                   value="false">
+                                            <label class="form-check-label text-warning" for="isPaidFalse">
+                                                <i class="fas fa-clock me-1"></i>Pending
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio"
+                                                   asp-for="Billing.isPaid" id="isPaidPartial"
+                                                   value="false">
+                                            <label class="form-check-label text-info" for="isPaidPartial">
+                                                <i class="fas fa-percentage me-1"></i>Partial
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <span asp-validation-for="Billing.isPaid" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Invoice Status -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.Status" class="form-label fw-semibold">
+                                        <i class="fas fa-flag me-1"></i>Invoice Status
+                                    </label>
+                                    <select asp-for="Billing.Status" class="form-select">
+                                        <option value="">-- Select Status --</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Partial">Partial</option>
+                                        <option value="Paid">Paid</option>
+                                        <option value="Overdue">Overdue</option>
+                                        <option value="Cancelled">Cancelled</option>
+                                        <option value="Refunded">Refunded</option>
+                                    </select>
+                                    <span asp-validation-for="Billing.Status" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.Notes" class="form-label fw-semibold">
+                                        <i class="fas fa-sticky-note me-1"></i>Notes
+                                    </label>
+                                    <textarea asp-for="Billing.Notes" class="form-control"
+                                              rows="4" placeholder="Enter any notes or remarks..."></textarea>
+                                    <span asp-validation-for="Billing.Notes" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                            <a asp-page="Index" class="btn btn-lg btn-outline-secondary px-4">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-lg btn-primary px-4" id="submitBtn">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Billing.BillDate" class="control-label"></label>
-                <input asp-for="Billing.BillDate" class="form-control" />
-                <span asp-validation-for="Billing.BillDate" class="text-danger"></span>
+        </div>
+
+        <!-- Sidebar - Invoice Preview & Actions -->
+        <div class="col-lg-4">
+            <!-- Invoice Preview -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Invoice Preview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="avatar avatar-xl rounded-circle bg-primary text-white mb-3 d-inline-flex align-items-center justify-content-center">
+                            <i class="fas fa-file-invoice-dollar fa-2x"></i>
+                        </div>
+                        <h5>Invoice #@Model.Billing.BillId</h5>
+                        <p class="text-muted">Preview of changes</p>
+                    </div>
+
+                    <div class="list-group list-group-flush mb-3">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="fw-medium">Total Amount:</span>
+                            <span class="fw-bold" id="previewTotalAmount">@Model.Billing.TotalAmount.ToString("C")</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="fw-medium">Paid Amount:</span>
+                            <span class="text-success" id="previewPaidAmount">@Model.Billing.PaidAmount?.ToString("C")</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="fw-medium">Balance:</span>
+                            <span class="fw-bold" id="previewBalance">@Model.Billing.Balance?.ToString("C")</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>
+                            <strong>Note:</strong> Balance is calculated automatically based on Total and Paid amounts.
+                        </small>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Billing.DueDate" class="control-label"></label>
-                <input asp-for="Billing.DueDate" class="form-control" />
-                <span asp-validation-for="Billing.DueDate" class="text-danger"></span>
+
+            <!-- Quick Calculations -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-calculator me-2"></i>Quick Calculations</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Calculate Balance</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">Total</span>
+                            <input type="number" class="form-control" id="calcTotal" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Paid</span>
+                            <input type="number" class="form-control" id="calcPaid" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="d-grid">
+                            <button type="button" class="btn btn-outline-primary" onclick="calculateBalance()">
+                                <i class="fas fa-calculator me-2"></i>Calculate Balance
+                            </button>
+                        </div>
+                        <div class="mt-3 p-2 bg-light rounded text-center">
+                            <small class="text-muted">Calculated Balance:</small>
+                            <div class="h4 mb-0" id="calcResult">$0.00</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Billing.TotalAmount" class="control-label"></label>
-                <input asp-for="Billing.TotalAmount" class="form-control" />
-                <span asp-validation-for="Billing.TotalAmount" class="text-danger"></span>
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-page="./Details" asp-route-id="@Model.Billing.BillId" class="btn btn-outline-info">
+                            <i class="fas fa-eye me-2"></i>View Invoice
+                        </a>
+                        <button type="button" class="btn btn-outline-success" onclick="markAsPaid()">
+                            <i class="fas fa-check-circle me-2"></i>Mark as Paid
+                        </button>
+                        <button type="button" class="btn btn-outline-warning" onclick="markAsOverdue()">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Mark as Overdue
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                            <i class="fas fa-times me-2"></i>Cancel Invoice
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Billing.PaidAmount" class="control-label"></label>
-                <input asp-for="Billing.PaidAmount" class="form-control" />
-                <span asp-validation-for="Billing.PaidAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.Balance" class="control-label"></label>
-                <input asp-for="Billing.Balance" class="form-control" />
-                <span asp-validation-for="Billing.Balance" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.isPaid" class="control-label"></label>
-                <input asp-for="Billing.isPaid" class="form-control" />
-                <span asp-validation-for="Billing.isPaid" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.Status" class="control-label"></label>
-                <input asp-for="Billing.Status" class="form-control" />
-                <span asp-validation-for="Billing.Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.InsuranceClaimAmount" class="control-label"></label>
-                <input asp-for="Billing.InsuranceClaimAmount" class="form-control" />
-                <span asp-validation-for="Billing.InsuranceClaimAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.Notes" class="control-label"></label>
-                <input asp-for="Billing.Notes" class="form-control" />
-                <span asp-validation-for="Billing.Notes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.CreatedBy" class="control-label"></label>
-                <select asp-for="Billing.CreatedBy" class="form-control" asp-items="ViewBag.CreatedBy"></select>
-                <span asp-validation-for="Billing.CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.PaidDate" class="control-label"></label>
-                <input asp-for="Billing.PaidDate" class="form-control" />
-                <span asp-validation-for="Billing.PaidDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-page="./Index">Back to List</a>
+<!-- Cancel Invoice Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelModalLabel">
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                    Cancel Invoice
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> Are you sure you want to cancel this invoice?
+                </div>
+                <p>This action will change the invoice status to "Cancelled".</p>
+                <div class="form-group">
+                    <label for="cancellationReason" class="form-label">Reason for cancellation</label>
+                    <textarea class="form-control" id="cancellationReason" rows="3"
+                              placeholder="Please provide a reason for cancellation..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" onclick="cancelInvoice()">
+                    <i class="fas fa-ban me-1"></i>Cancel Invoice
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('editBillingForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Calculate initial balance
+            calculateFormBalance();
+            updatePreview();
+
+            // Listen to amount changes for auto-calculation
+            const totalAmountInput = document.getElementById('totalAmount');
+            const paidAmountInput = document.getElementById('paidAmount');
+            const balanceInput = document.getElementById('balanceAmount');
+
+            if (totalAmountInput && paidAmountInput && balanceInput) {
+                totalAmountInput.addEventListener('input', function() {
+                    calculateFormBalance();
+                    updatePreview();
+                });
+
+                paidAmountInput.addEventListener('input', function() {
+                    calculateFormBalance();
+                    updatePreview();
+                });
+            }
+
+            // Auto-update status based on payment
+            const paidRadios = document.querySelectorAll('input[name="Billing.isPaid"]');
+            const statusSelect = document.querySelector('select[asp-for="Billing.Status"]');
+
+            if (paidRadios && statusSelect) {
+                paidRadios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        updateStatusBasedOnPayment();
+                        updatePreview();
+                    });
+                });
+
+                // Also update when paid amount changes
+                if (paidAmountInput) {
+                    paidAmountInput.addEventListener('input', updateStatusBasedOnPayment);
+                }
+            }
+
+            // Form submission handling
+            if (form && submitBtn) {
+                form.addEventListener('submit', function(e) {
+                    // Validate amounts
+                    const totalAmount = parseFloat(totalAmountInput.value) || 0;
+                    const paidAmount = parseFloat(paidAmountInput.value) || 0;
+
+                    if (totalAmount <= 0) {
+                        e.preventDefault();
+                        showAlert('Total amount must be greater than 0', 'error');
+                        return;
+                    }
+
+                    if (paidAmount > totalAmount) {
+                        e.preventDefault();
+                        showAlert('Paid amount cannot exceed total amount', 'error');
+                        return;
+                    }
+
+                    // Show loading state
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+                });
+            }
+
+            // Format dates for display
+            formatDateInputs();
+        });
+
+        function calculateFormBalance() {
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
+            const paidAmount = parseFloat(document.getElementById('paidAmount').value) || 0;
+            const balance = totalAmount - paidAmount;
+
+            const balanceInput = document.getElementById('balanceAmount');
+            if (balanceInput) {
+                balanceInput.value = balance.toFixed(2);
+
+                // Color coding for balance
+                if (balance === 0) {
+                    balanceInput.classList.remove('bg-warning', 'bg-danger');
+                    balanceInput.classList.add('bg-success', 'text-white');
+                } else if (balance < 0) {
+                    balanceInput.classList.remove('bg-warning', 'bg-success');
+                    balanceInput.classList.add('bg-danger', 'text-white');
+                } else {
+                    balanceInput.classList.remove('bg-success', 'bg-danger');
+                    balanceInput.classList.add('bg-warning');
+                }
+            }
+        }
+
+        function calculateBalance() {
+            const calcTotal = parseFloat(document.getElementById('calcTotal').value) || 0;
+            const calcPaid = parseFloat(document.getElementById('calcPaid').value) || 0;
+            const balance = calcTotal - calcPaid;
+
+            const calcResult = document.getElementById('calcResult');
+            if (calcResult) {
+                calcResult.textContent = '$' + balance.toFixed(2);
+
+                // Color coding
+                if (balance === 0) {
+                    calcResult.className = 'h4 mb-0 text-success';
+                } else if (balance < 0) {
+                    calcResult.className = 'h4 mb-0 text-danger';
+                } else {
+                    calcResult.className = 'h4 mb-0 text-warning';
+                }
+
+                // Update form fields if user wants
+                if (confirm('Apply these values to the form?')) {
+                    document.getElementById('totalAmount').value = calcTotal.toFixed(2);
+                    document.getElementById('paidAmount').value = calcPaid.toFixed(2);
+                    calculateFormBalance();
+                    updatePreview();
+                }
+            }
+        }
+
+        function updateStatusBasedOnPayment() {
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
+            const paidAmount = parseFloat(document.getElementById('paidAmount').value) || 0;
+            const balance = totalAmount - paidAmount;
+            const isPaidTrue = document.getElementById('isPaidTrue');
+            const statusSelect = document.querySelector('select[asp-for="Billing.Status"]');
+
+            if (balance === 0 && totalAmount > 0) {
+                // Auto-check paid if balance is 0
+                isPaidTrue.checked = true;
+                if (statusSelect) {
+                    statusSelect.value = 'Paid';
+                }
+            } else if (paidAmount > 0 && paidAmount < totalAmount) {
+                // Auto-set partial if some payment made
+                document.getElementById('isPaidPartial').checked = true;
+                if (statusSelect) {
+                    statusSelect.value = 'Partial';
+                }
+            } else if (paidAmount === 0) {
+                // Auto-set pending if no payment
+                document.getElementById('isPaidFalse').checked = true;
+                if (statusSelect) {
+                    statusSelect.value = 'Pending';
+                }
+            }
+        }
+
+        function updatePreview() {
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
+            const paidAmount = parseFloat(document.getElementById('paidAmount').value) || 0;
+            const balance = totalAmount - paidAmount;
+
+            const previewTotal = document.getElementById('previewTotalAmount');
+            const previewPaid = document.getElementById('previewPaidAmount');
+            const previewBalance = document.getElementById('previewBalance');
+
+            if (previewTotal) previewTotal.textContent = '$' + totalAmount.toFixed(2);
+            if (previewPaid) previewPaid.textContent = '$' + paidAmount.toFixed(2);
+            if (previewBalance) previewBalance.textContent = '$' + balance.toFixed(2);
+        }
+
+        function markAsPaid() {
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
+
+            document.getElementById('isPaidTrue').checked = true;
+            document.getElementById('paidAmount').value = totalAmount.toFixed(2);
+            document.querySelector('select[asp-for="Billing.Status"]').value = 'Paid';
+
+            // Set paid date to today if not set
+            const paidDateInput = document.querySelector('input[asp-for="Billing.PaidDate"]');
+            if (paidDateInput && !paidDateInput.value) {
+                const today = new Date().toISOString().split('T')[0];
+                paidDateInput.value = today;
+            }
+
+            calculateFormBalance();
+            updatePreview();
+
+            showAlert('Invoice marked as paid', 'success');
+        }
+
+        function markAsOverdue() {
+            document.querySelector('select[asp-for="Billing.Status"]').value = 'Overdue';
+            showAlert('Invoice marked as overdue', 'warning');
+        }
+
+        function cancelInvoice() {
+            const cancellationReason = document.getElementById('cancellationReason').value;
+
+            if (!cancellationReason.trim()) {
+                showAlert('Please provide a reason for cancellation', 'error');
+                return;
+            }
+
+            // Update status to cancelled
+            document.querySelector('select[asp-for="Billing.Status"]').value = 'Cancelled';
+
+            // Add cancellation note to notes
+            const notesTextarea = document.querySelector('textarea[asp-for="Billing.Notes"]');
+            const currentDate = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const cancellationNote = '\n\n[CANCELLED - ' + currentDate + ']\nReason: ' + cancellationReason;
+            notesTextarea.value += cancellationNote;
+
+            // Submit the form
+            document.getElementById('editBillingForm').submit();
+
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('cancelModal'));
+            if (modal) modal.hide();
+        }
+
+        function formatDateInputs() {
+            const dateInputs = [
+                document.querySelector('input[asp-for="Billing.BillDate"]'),
+                document.querySelector('input[asp-for="Billing.DueDate"]'),
+                document.querySelector('input[asp-for="Billing.PaidDate"]')
+            ];
+
+            dateInputs.forEach(input => {
+                if (input && input.value) {
+                    try {
+                        const date = new Date(input.value);
+                        if (!isNaN(date)) {
+                            input.value = date.toISOString().split('T')[0];
+                        }
+                    } catch (e) {
+                        console.log('Date formatting error:', e);
+                    }
+                }
+            });
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertClass = type === 'error' ? 'alert-danger' :
+                               type === 'warning' ? 'alert-warning' :
+                               type === 'success' ? 'alert-success' : 'alert-info';
+
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert-toast');
+            existingAlerts.forEach(alert => alert.remove());
+
+            // Create alert element
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${alertClass} alert-dismissible fade show alert-toast position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; max-width: 400px;';
+            alertDiv.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
+                    <div>${message}</div>
+                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+
+            // Add to body
+            document.body.appendChild(alertDiv);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

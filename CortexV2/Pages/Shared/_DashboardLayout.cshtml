@@ -312,6 +312,473 @@
         .bg-light {
             background-color: #f8f9fa !important;
         }
+
+        .card {
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+            }
+
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #86b7fe;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            }
+
+        .form-control-lg, .form-select-lg {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+        }
+
+        .btn-lg {
+            padding: 0.75rem 2rem;
+        }
+
+        .breadcrumb {
+            background-color: transparent;
+            padding-left: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .breadcrumb-item a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: #0d6efd;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+        }
+
+        .avatar-xl {
+            width: 80px;
+            height: 80px;
+            font-size: 32px;
+        }
+
+        .list-group-item {
+            border-color: rgba(0,0,0,.05);
+            padding: 0.75rem 0;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+        }
+
+        .bg-light {
+            background-color: #f8f9fa !important;
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+        }
+
+        .form-check-input:checked {
+            background-color: #198754;
+            border-color: #198754;
+        }
+
+        .card {
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+            }
+
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .breadcrumb {
+            background-color: transparent;
+            padding-left: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .breadcrumb-item a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: #0d6efd;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-md {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+        }
+
+        .bg-purple {
+            background-color: #6f42c1 !important;
+        }
+
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+        }
+
+            .timeline:before {
+                content: '';
+                position: absolute;
+                left: 8px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                background-color: #dee2e6;
+            }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+            .timeline-item:last-child {
+                margin-bottom: 0;
+            }
+
+        .timeline-marker {
+            position: absolute;
+            left: -20px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .timeline-content {
+            padding-left: 10px;
+        }
+
+        .timeline-item.active .timeline-marker {
+            transform: scale(1.2);
+            box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.2);
+        }
+
+        .timeline-item.active .timeline-content h6 {
+            color: var(--bs-primary);
+            font-weight: 600;
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 0.75rem 0;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+
+        .d-grid {
+            display: grid;
+            gap: 0.5rem;
+        }
+        /* Print-specific styles */
+        @@media print {
+            .navbar, .sidebar, .btn, .modal, .breadcrumb, .card-header {
+                display: none !important;
+            }
+
+            .container-fluid {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .card {
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+                margin-bottom: 20px !important;
+            }
+
+            body {
+                background: white !important;
+                color: black !important;
+            }
+        }
+
+        .progress {
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            border-radius: 10px;
+        }
+
+        .card {
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+            }
+
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .breadcrumb {
+            background-color: transparent;
+            padding-left: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .breadcrumb-item a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: #0d6efd;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-md {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+        }
+
+        .bg-purple {
+            background-color: #6f42c1 !important;
+        }
+
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+        }
+
+            .timeline:before {
+                content: '';
+                position: absolute;
+                left: 8px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                background-color: #dee2e6;
+            }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+            .timeline-item:last-child {
+                margin-bottom: 0;
+            }
+
+        .timeline-marker {
+            position: absolute;
+            left: -20px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .timeline-content {
+            padding-left: 10px;
+        }
+
+        .timeline-item.active .timeline-marker {
+            transform: scale(1.2);
+            box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.2);
+        }
+
+        .timeline-item.active .timeline-content h6 {
+            color: var(--bs-primary);
+            font-weight: 600;
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 0.75rem 0;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+
+        .d-grid {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        dt {
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        dd {
+            font-weight: 400;
+            color: #212529;
+        }
+
+        <style >
+        .card {
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #86b7fe;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            }
+
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+        }
+
+        .btn-lg {
+            padding: 0.75rem 2rem;
+        }
+
+        .breadcrumb {
+            background-color: transparent;
+            padding-left: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .breadcrumb-item a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: #0d6efd;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+        }
+
+        .avatar-xl {
+            width: 80px;
+            height: 80px;
+            font-size: 32px;
+        }
+
+        .list-group-item {
+            border-color: rgba(0,0,0,.05);
+            padding: 0.75rem 0;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+        }
+
+        .form-check-input:checked {
+            background-color: #198754;
+            border-color: #198754;
+        }
+
+            .form-check-input:checked + .form-check-label.text-success {
+                font-weight: 600;
+            }
+
+        .d-grid {
+            display: grid;
+            gap: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -713,9 +1180,271 @@
             }, 5000);
         }
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('billingForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Set current date as default for bill date
+            const billDateInput = document.querySelector('input[asp-for="Billing.BillDate"]');
+            if (billDateInput && !billDateInput.value) {
+                billDateInput.value = new Date().toISOString().split('T')[0];
+            }
+
+            // Set minimum due date to today
+            const dueDateInput = document.querySelector('input[asp-for="Billing.DueDate"]');
+            if (dueDateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dueDateInput.min = today;
+            }
+
+            // Calculate balance automatically
+            const totalAmountInput = document.getElementById('totalAmount');
+            const paidAmountInput = document.getElementById('paidAmount');
+            const balanceInput = document.getElementById('balanceAmount');
+
+            // Update preview
+            updatePreview();
+
+            // Listen to input changes
+            totalAmountInput?.addEventListener('input', updateBalanceAndPreview);
+            paidAmountInput?.addEventListener('input', updateBalanceAndPreview);
+            dueDateInput?.addEventListener('change', updatePreview);
+
+            // Payment status change
+            const paidRadios = document.querySelectorAll('input[name="Billing.isPaid"]');
+            paidRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updatePreview();
+                    togglePaidDateSection();
+                });
+            });
+
+            // Toggle paid date section based on payment status
+            function togglePaidDateSection() {
+                const paidDateSection = document.getElementById('paidDateSection');
+                const isPaidTrue = document.getElementById('isPaidTrue').checked;
+
+                if (isPaidTrue) {
+                    paidDateSection.style.display = 'block';
+                    // Set default paid date to today
+                    const paidDateInput = document.querySelector('input[asp-for="Billing.PaidDate"]');
+                    if (paidDateInput && !paidDateInput.value) {
+                        paidDateInput.value = new Date().toISOString().split('T')[0];
+                    }
+                } else {
+                    paidDateSection.style.display = 'none';
+                }
+            }
+
+            // Calculate balance
+            function updateBalanceAndPreview() {
+                const totalAmount = parseFloat(totalAmountInput.value) || 0;
+                const paidAmount = parseFloat(paidAmountInput.value) || 0;
+                const balance = totalAmount - paidAmount;
+
+                // Update balance field
+                if (balanceInput) {
+                    balanceInput.value = balance.toFixed(2);
+
+                    // Color coding for balance
+                    if (balance === 0) {
+                        balanceInput.classList.remove('bg-warning', 'bg-danger');
+                        balanceInput.classList.add('bg-success', 'text-white');
+                    } else if (balance < 0) {
+                        balanceInput.classList.remove('bg-warning', 'bg-success');
+                        balanceInput.classList.add('bg-danger', 'text-white');
+                    } else {
+                        balanceInput.classList.remove('bg-success', 'bg-danger');
+                        balanceInput.classList.add('bg-warning');
+                    }
+                }
+
+                updatePreview();
+            }
+
+            // Update preview panel
+            function updatePreview() {
+                // Bill date
+                const billDate = billDateInput?.value;
+                if (billDate) {
+                    const date = new Date(billDate);
+                    document.getElementById('previewBillDate').textContent =
+                        date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                }
+
+                // Due date
+                const dueDate = dueDateInput?.value;
+                if (dueDate) {
+                    const date = new Date(dueDate);
+                    document.getElementById('previewDueDate').textContent =
+                        date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                } else {
+                    document.getElementById('previewDueDate').textContent = '--';
+                }
+
+                // Amounts
+                const totalAmount = parseFloat(totalAmountInput?.value) || 0;
+                const paidAmount = parseFloat(paidAmountInput?.value) || 0;
+                const balance = totalAmount - paidAmount;
+
+                document.getElementById('previewTotalAmount').textContent = `$${totalAmount.toFixed(2)}`;
+                document.getElementById('previewPaidAmount').textContent = `$${paidAmount.toFixed(2)}`;
+                document.getElementById('previewBalance').textContent = `$${balance.toFixed(2)}`;
+
+                // Status
+                const isPaid = document.getElementById('isPaidTrue').checked;
+                const statusBadge = document.getElementById('previewStatus');
+
+                if (isPaid) {
+                    statusBadge.textContent = 'Paid';
+                    statusBadge.className = 'badge bg-success';
+                } else if (balance === 0 && totalAmount > 0) {
+                    statusBadge.textContent = 'Paid';
+                    statusBadge.className = 'badge bg-success';
+                } else if (paidAmount > 0) {
+                    statusBadge.textContent = 'Partial';
+                    statusBadge.className = 'badge bg-info';
+                } else if (balance > 0) {
+                    statusBadge.textContent = 'Pending';
+                    statusBadge.className = 'badge bg-warning';
+                } else {
+                    statusBadge.textContent = 'Pending';
+                    statusBadge.className = 'badge bg-warning';
+                }
+            }
+
+            // Form validation
+            form.addEventListener('submit', function(e) {
+                // Validate required fields
+                const patientId = document.querySelector('select[asp-for="Billing.PatientId"]').value;
+                const totalAmount = parseFloat(totalAmountInput?.value) || 0;
+
+                if (!patientId) {
+                    e.preventDefault();
+                    showAlert('Please select a patient', 'error');
+                    return;
+                }
+
+                if (totalAmount <= 0) {
+                    e.preventDefault();
+                    showAlert('Total amount must be greater than 0', 'error');
+                    return;
+                }
+
+                // Validate paid amount
+                const paidAmount = parseFloat(paidAmountInput?.value) || 0;
+                if (paidAmount > totalAmount) {
+                    e.preventDefault();
+                    showAlert('Paid amount cannot exceed total amount', 'error');
+                    return;
+                }
+
+                // Set current user as created by (you need to implement this)
+                const createdByField = document.getElementById('createdByField');
+                // createdByField.value = getCurrentUserId(); // Implement this function
+
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating...';
+            });
+
+            // Initialize toggle
+            togglePaidDateSection();
+            updateBalanceAndPreview();
+        });
+
+        function showAlert(message, type = 'info') {
+            const alertClass = type === 'error' ? 'alert-danger' :
+                               type === 'warning' ? 'alert-warning' : 'alert-info';
+
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert-toast');
+            existingAlerts.forEach(alert => alert.remove());
+
+            // Create alert element
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${alertClass} alert-dismissible fade show alert-toast position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; max-width: 400px;';
+            alertDiv.innerHTML = `
+                <strong>${type === 'error' ? 'Error!' : type === 'warning' ? 'Warning!' : 'Info!'}</strong> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            // Add to body
+            document.body.appendChild(alertDiv);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+    </script>
+
+
+   @*  <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set min date for rescheduling
+            const today = new Date().toISOString().split('T')[0];
+            const newDateInput = document.getElementById('newAppointmentDate');
+            if (newDateInput) {
+                newDateInput.min = today;
+            }
+        });
+
+        function cancelAppointment() {
+            const cancellationReason = document.getElementById('cancellationReason').value;
+
+            if (!cancellationReason.trim()) {
+                alert('Please provide a reason for cancellation.');
+                return;
+            }
+
+            // Here you would typically make an API call to update the appointment status
+            // For now, we'll redirect to edit page with a query parameter
+            window.location.href = `@Url.Page("./Edit", new { id = Model.Appointment.AppointmentId })?cancel=true&reason=${encodeURIComponent(cancellationReason)}`;
+        }
+
+        function rescheduleAppointment() {
+            const newDate = document.getElementById('newAppointmentDate').value;
+            const newTime = document.getElementById('newAppointmentTime').value;
+            const reason = document.getElementById('rescheduleReason').value;
+
+            if (!newDate || !newTime) {
+                alert('Please select both a new date and time.');
+                return;
+            }
+
+            // Here you would typically make an API call to reschedule the appointment
+            // For now, we'll redirect to edit page with query parameters
+            const newDateTime = `${newDate}T${newTime}`;
+            window.location.href = `@Url.Page("./Edit", new { id = Model.Appointment.AppointmentId })?reschedule=true&newDateTime=${encodeURIComponent(newDateTime)}&reason=${encodeURIComponent(reason)}`;
+        }
+
+        // Print functionality
+        document.querySelector('.btn-outline-info')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.print();
+        });
+
+        // Send reminder functionality
+        document.querySelector('.btn-outline-success')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Send reminder to patient about this appointment?')) {
+                // Here you would make an API call to send reminder
+                alert('Reminder sent successfully!');
+            }
+        });
+    </script> *@
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
     @* <partial name="_ValidationScriptsPartial" /> *@
+    <!-- Allow individual pages to add their own scripts -->
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

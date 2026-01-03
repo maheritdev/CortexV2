@@ -2,91 +2,566 @@
 @model Cortex.Pages.Billing.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Billing Details";
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
 }
 
-<h1>Details</h1>
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a asp-page="/Index">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-page="Index">Billing</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Invoice Details</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-1">Invoice Details</h1>
+            <p class="text-muted mb-0">Invoice #@Model.Billing.BillId</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-page="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+            <a asp-page="./Edit" asp-route-id="@Model.Billing.BillId" class="btn btn-primary">
+                <i class="fas fa-edit me-2"></i>Edit Invoice
+            </a>
+            <button type="button" class="btn btn-success" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Print
+            </button>
+        </div>
+    </div>
 
-<div>
-    <h4>Billing</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Billing.BillDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Billing.BillDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Billing.DueDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Billing.DueDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Billing.TotalAmount)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Billing.TotalAmount)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Billing.PaidAmount)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Billing.PaidAmount)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Billing.Balance)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Billing.Balance)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Billing.isPaid)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Billing.isPaid)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Billing.Status)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Billing.Status)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Billing.InsuranceClaimAmount)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Billing.InsuranceClaimAmount)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Billing.Notes)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Billing.Notes)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Billing.PaidDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Billing.PaidDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Billing.CreatedByNavigation)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Billing.CreatedByNavigation.StaffID)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Billing.Patient)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Billing.Patient.PatientId)
-        </dd>
-    </dl>
+    <div class="row">
+        <!-- Main Invoice Details -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>
+                        Invoice Information
+                    </h5>
+                    <span class="badge @GetStatusBadgeClass(Model.Billing.Status) fs-6">
+                        @Model.Billing.Status
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <!-- Invoice Summary -->
+                        <div class="col-12">
+                            <div class="card border">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-receipt me-2"></i>Invoice Summary</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold text-muted">
+                                                    <i class="fas fa-calendar-day me-1"></i>Invoice Date
+                                                </label>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <div class="avatar avatar-sm rounded-circle bg-info text-white d-flex align-items-center justify-content-center">
+                                                            <i class="fas fa-calendar"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h6 class="mb-0">@Model.Billing.BillDate?.ToString("dddd, MMMM dd, yyyy")</h6>
+                                                        <small class="text-muted">Issued on</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold text-muted">
+                                                    <i class="fas fa-calendar-alt me-1"></i>Due Date
+                                                </label>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <div class="avatar avatar-sm rounded-circle bg-warning text-white d-flex align-items-center justify-content-center">
+                                                            <i class="fas fa-clock"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h6 class="mb-0">@Model.Billing.DueDate?.ToString("dddd, MMMM dd, yyyy")</h6>
+                                                        <small class="text-muted">Payment due by</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold text-muted">
+                                                    <i class="fas fa-calendar-check me-1"></i>Paid Date
+                                                </label>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <div class="avatar avatar-sm rounded-circle bg-success text-white d-flex align-items-center justify-content-center">
+                                                            <i class="fas fa-check-circle"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h6 class="mb-0">@(Model.Billing.PaidDate?.ToString("dddd, MMMM dd, yyyy") ?? "Not Paid")</h6>
+                                                        <small class="text-muted">Payment received on</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financial Details -->
+                        <div class="col-12">
+                            <div class="card border">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>Financial Details</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Total Amount</label>
+                                                <div class="card bg-light border">
+                                                    <div class="card-body text-center py-3">
+                                                        <h4 class="mb-0 text-dark">@Model.Billing.TotalAmount.ToString("C")</h4>
+                                                        <small class="text-muted">Invoice Total</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Paid Amount</label>
+                                                <div class="card @(Model.Billing.PaidAmount > 0 ? "bg-success" : "bg-light") border">
+                                                    <div class="card-body text-center py-3 @(Model.Billing.PaidAmount > 0 ? "text-white" : "")">
+                                                        <h4 class="mb-0">@Model.Billing.PaidAmount?.ToString("C")</h4>
+                                                        <small>Amount Received</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Balance Due</label>
+                                                <div class="card @(Model.Billing.Balance > 0 ? "bg-danger" : "bg-success") border">
+                                                    <div class="card-body text-center py-3 text-white">
+                                                        <h4 class="mb-0">@Model.Billing.Balance?.ToString("C")</h4>
+                                                        <small>Remaining Balance</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-semibold">Insurance</label>
+                                                <div class="card @(Model.Billing.InsuranceClaimAmount > 0 ? "bg-info" : "bg-light") border">
+                                                    <div class="card-body text-center py-3 @(Model.Billing.InsuranceClaimAmount > 0 ? "text-white" : "")">
+                                                        <h4 class="mb-0">@Model.Billing.InsuranceClaimAmount?.ToString("C")</h4>
+                                                        <small>Insurance Claim</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Information -->
+                        <div class="col-md-6">
+                            <div class="card border h-100">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Invoice Details</h6>
+                                </div>
+                                <div class="card-body">
+                                    <dl class="row mb-0">
+                                        <dt class="col-sm-5 text-muted">Bill Date:</dt>
+                                        <dd class="col-sm-7">@Model.Billing.BillDate?.ToString("MMM dd, yyyy")</dd>
+
+                                        <dt class="col-sm-5 text-muted">Due Date:</dt>
+                                        <dd class="col-sm-7">
+                                            <span class="@(Model.Billing.DueDate < DateTime.Now ? "text-danger" : "")">
+                                                @Model.Billing.DueDate?.ToString("MMM dd, yyyy")
+                                                @if (Model.Billing.DueDate < DateTime.Now)
+                                                {
+                                                    <span class="badge bg-danger ms-1">Overdue</span>
+                                                }
+                                            </span>
+                                        </dd>
+
+                                        <dt class="col-sm-5 text-muted">Paid Date:</dt>
+                                        <dd class="col-sm-7 @(Model.Billing.PaidDate.HasValue ? "text-success" : "text-muted")">
+                                            @(Model.Billing.PaidDate?.ToString("MMM dd, yyyy") ?? "Not Paid")
+                                        </dd>
+
+                                        <dt class="col-sm-5 text-muted">Status:</dt>
+                                        <dd class="col-sm-7">
+                                            <span class="badge @GetStatusBadgeClass(Model.Billing.Status)">
+                                                @Model.Billing.Status
+                                            </span>
+                                        </dd>
+
+                                        <dt class="col-sm-5 text-muted">Payment Status:</dt>
+                                        <dd class="col-sm-7">
+                                            @if (Model.Billing.isPaid == true)
+                                            {
+                                                <span class="badge bg-success">Fully Paid</span>
+                                            }
+                                            else if (Model.Billing.PaidAmount > 0)
+                                            {
+                                                <span class="badge bg-info">Partially Paid</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning">Pending</span>
+                                            }
+                                        </dd>
+
+                                        <dt class="col-sm-5 text-muted">Created By:</dt>
+                                        <dd class="col-sm-7">
+                                            @if (Model.Billing.CreatedByNavigation != null)
+                                            {
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-user-circle text-primary me-2"></i>
+                                                    <span>@Model.Billing.CreatedByNavigation.StaffID</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not available</span>
+                                            }
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Patient Information -->
+                        <div class="col-md-6">
+                            <div class="card border h-100">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-user-injured me-2"></i>Patient Information</h6>
+                                </div>
+                                <div class="card-body">
+                                    @if (Model.Billing.Patient != null)
+                                    {
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="avatar avatar-md rounded-circle bg-success text-white d-flex align-items-center justify-content-center">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <h6 class="mb-0">Patient #@Model.Billing.Patient.PatientId</h6>
+                                                <small class="text-muted">Patient ID</small>
+                                            </div>
+                                        </div>
+                                        <dl class="row mb-0">
+                                            <dt class="col-sm-5 text-muted">Patient ID:</dt>
+                                            <dd class="col-sm-7">@Model.Billing.Patient.PatientId</dd>
+
+                                            @if (Model.Billing.Patient.FirstName != null && Model.Billing.Patient.LastName != null)
+                                            {
+                                                <dt class="col-sm-5 text-muted">Patient Name:</dt>
+                                                <dd class="col-sm-7">@Model.Billing.Patient.FirstName @Model.Billing.Patient.LastName</dd>
+                                            }
+
+                                            @if (Model.Billing.Patient.DateOfBirth.HasValue)
+                                            {
+                                                <dt class="col-sm-5 text-muted">Date of Birth:</dt>
+                                                <dd class="col-sm-7">@Model.Billing.Patient.DateOfBirth.Value.ToString("MMM dd, yyyy")</dd>
+                                            }
+
+                                            @if (Model.Billing.Patient.Gender != null)
+                                            {
+                                                <dt class="col-sm-5 text-muted">Gender:</dt>
+                                                <dd class="col-sm-7">@Model.Billing.Patient.Gender</dd>
+                                            }
+
+                                            @if (Model.Billing.Patient.EmergencyContactName != null)
+                                            {
+                                                <dt class="col-sm-5 text-muted">Phone:</dt>
+                                                <dd class="col-sm-7">@Model.Billing.Patient.EmergencyContactName</dd>
+                                            }
+
+                                            @if (Model.Billing.Patient.Email != null)
+                                            {
+                                                <dt class="col-sm-5 text-muted">Email:</dt>
+                                                <dd class="col-sm-7">@Model.Billing.Patient.Email</dd>
+                                            }
+                                        </dl>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-user-slash fa-2x text-muted mb-3"></i>
+                                            <p class="text-muted">Patient information not available</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes Section -->
+                        <div class="col-12">
+                            <div class="card border">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-sticky-note me-2"></i>Notes & Remarks</h6>
+                                </div>
+                                <div class="card-body">
+                                    @if (!string.IsNullOrEmpty(Model.Billing.Notes))
+                                    {
+                                        <div class="p-3 bg-light rounded">
+                                            @Model.Billing.Notes
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-sticky-note fa-2x text-muted mb-3"></i>
+                                            <p class="text-muted">No notes available for this invoice</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar - Actions & Summary -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-page="./Edit" asp-route-id="@Model.Billing.BillId" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Edit Invoice
+                        </a>
+
+                        @if (Model.Billing.Balance > 0)
+                        {
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#recordPaymentModal">
+                                <i class="fas fa-credit-card me-2"></i>Record Payment
+                            </button>
+
+                            <button type="button" class="btn btn-warning" onclick="sendReminder()">
+                                <i class="fas fa-bell me-2"></i>Send Reminder
+                            </button>
+                        }
+
+                        <button type="button" class="btn btn-info" onclick="window.print()">
+                            <i class="fas fa-print me-2"></i>Print Invoice
+                        </button>
+
+                        <button type="button" class="btn btn-outline-secondary" onclick="sendEmail()">
+                            <i class="fas fa-envelope me-2"></i>Email Invoice
+                        </button>
+
+                        @if (Model.Billing.Balance == 0 && Model.Billing.isPaid == true)
+                        {
+                            <button type="button" class="btn btn-outline-success">
+                                <i class="fas fa-file-pdf me-2"></i>Download Receipt
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Summary -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Payment Summary</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Payment Progress</span>
+                            <span class="fw-bold">
+                                @(Model.Billing.TotalAmount > 0 ?
+                                                                ((Model.Billing.PaidAmount ?? 0) / Model.Billing.TotalAmount * 100).ToString("F1") :
+                                                                "0")%
+                            </span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar @GetProgressBarClass(Model.Billing.isPaid, Model.Billing.PaidAmount, Model.Billing.TotalAmount)"
+                                 role="progressbar"
+                                 style="width: @(Model.Billing.TotalAmount > 0 ?
+                                                                     (Model.Billing.PaidAmount ?? 0) / Model.Billing.TotalAmount * 100 :
+                                                                     0)%;"
+                                 aria-valuenow="@(Model.Billing.PaidAmount ?? 0)"
+                                 aria-valuemin="0"
+                                 aria-valuemax="@Model.Billing.TotalAmount">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="fw-medium">Total Amount:</span>
+                            <span class="fw-bold">@Model.Billing.TotalAmount.ToString("C")</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="fw-medium">Paid Amount:</span>
+                            <span class="text-success">@Model.Billing.PaidAmount?.ToString("C")</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="fw-medium">Balance Due:</span>
+                            <span class="fw-bold @(Model.Billing.Balance > 0 ? "text-danger" : "text-success")">
+                                @Model.Billing.Balance?.ToString("C")
+                            </span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span class="fw-medium">Insurance Claim:</span>
+                            <span class="text-info">@Model.Billing.InsuranceClaimAmount?.ToString("C")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoice Status -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-history me-2"></i>Invoice Status Timeline</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item active">
+                            <div class="timeline-marker bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-0">Invoice Created</h6>
+                                <small class="text-muted">@Model.Billing.BillDate?.ToString("MMM dd, yyyy")</small>
+                            </div>
+                        </div>
+
+                        @if (Model.Billing.PaidAmount > 0)
+                        {
+                            <div class="timeline-item active">
+                                <div class="timeline-marker bg-success"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-0">Payment Received</h6>
+                                    <small class="text-muted">@Model.Billing.PaidDate?.ToString("MMM dd, yyyy")</small>
+                                </div>
+                            </div>
+                        }
+
+                        @if (Model.Billing.Balance == 0 && Model.Billing.isPaid == true)
+                        {
+                            <div class="timeline-item active">
+                                <div class="timeline-marker bg-success"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-0">Fully Paid</h6>
+                                    <small class="text-muted">Invoice settled</small>
+                                </div>
+                            </div>
+                        }
+                        else if (Model.Billing.DueDate < DateTime.Now && Model.Billing.Balance > 0)
+                        {
+                            <div class="timeline-item active">
+                                <div class="timeline-marker bg-danger"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-0">Overdue</h6>
+                                    <small class="text-muted">Payment past due</small>
+                                </div>
+                            </div>
+                        }
+                        else if (Model.Billing.DueDate >= DateTime.Now && Model.Billing.Balance > 0)
+                        {
+                            <div class="timeline-item active">
+                                <div class="timeline-marker bg-warning"></div>
+                                <div class="timeline-content">
+                                    <h6 class="mb-0">Pending Payment</h6>
+                                    <small class="text-muted">Due @Model.Billing.DueDate?.ToString("MMM dd, yyyy")</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.Billing.BillId">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
-</div>
+
+@functions {
+    private string GetStatusBadgeClass(string status)
+    {
+        if (string.IsNullOrEmpty(status)) return "bg-secondary";
+
+        return status.ToLower() switch
+        {
+            "paid" => "bg-success",
+            "partial" => "bg-info",
+            "pending" => "bg-warning",
+            "overdue" => "bg-danger",
+            "cancelled" => "bg-secondary",
+            "refunded" => "bg-purple",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetProgressBarClass(bool? isPaid, decimal? paidAmount, decimal totalAmount)
+    {
+        if (isPaid == true)
+            return "bg-success";
+
+        if (paidAmount.HasValue && paidAmount > 0)
+        {
+            var percentage = (paidAmount.Value / totalAmount) * 100;
+            return percentage >= 50 ? "bg-info" : "bg-warning";
+        }
+
+        return "bg-warning";
+    }
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips if needed
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+
+        function sendReminder() {
+            if (confirm('Send payment reminder to patient?')) {
+                // Here you would make an API call to send reminder
+                alert('Payment reminder sent successfully!');
+            }
+        }
+
+        function sendEmail() {
+            if (confirm('Send invoice to patient via email?')) {
+                // Here you would make an API call to send email
+                alert('Invoice email sent successfully!');
+            }
+        }
+
+        // Print functionality
+        function printInvoice() {
+            // Store original title
+            const originalTitle = document.title;
+
+            // Set print title
+            document.title = 'Invoice #@Model.Billing.BillId - @Model.Billing.BillDate?.ToString("yyyy-MM-dd")';
+
+            // Trigger print
+            window.print();
+
+            // Restore original title
+            setTimeout(() => {
+                document.title = originalTitle;
+            }, 1000);
+        }
+    </script>
+}

@@ -2,63 +2,315 @@
 @model Cortex.Pages.Billing.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Billing Record";
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
 }
 
-<h1>Create</h1>
-
-<h4>Billing</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Billing.PatientId" class="control-label"></label>
-                <select asp-for="Billing.PatientId" class ="form-control" asp-items="ViewBag.PatientId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.DueDate" class="control-label"></label>
-                <input asp-for="Billing.DueDate" class="form-control" />
-                <span asp-validation-for="Billing.DueDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.TotalAmount" class="control-label"></label>
-                <input asp-for="Billing.TotalAmount" class="form-control" />
-                <span asp-validation-for="Billing.TotalAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.Balance" class="control-label"></label>
-                <input asp-for="Billing.Balance" class="form-control" />
-                <span asp-validation-for="Billing.Balance" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.isPaid" class="control-label"></label>
-                <input asp-for="Billing.isPaid" class="form-control" />
-                <span asp-validation-for="Billing.isPaid" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.Notes" class="control-label"></label>
-                <input asp-for="Billing.Notes" class="form-control" />
-                <span asp-validation-for="Billing.Notes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.CreatedBy" class="control-label"></label>
-                <select asp-for="Billing.CreatedBy" class ="form-control" asp-items="ViewBag.CreatedBy"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Billing.PaidDate" class="control-label"></label>
-                <input asp-for="Billing.PaidDate" class="form-control" />
-                <span asp-validation-for="Billing.PaidDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Account/Dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-page="Index">Billing</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create</li>
+                </ol>
+            </nav>
+            <h1 class="h2 mb-0">Create New Billing Record</h1>
+            <p class="text-muted">Generate a new billing invoice for a patient</p>
+        </div>
+        <div>
+            <a asp-page="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
+    <div class="row">
+        <!-- Billing Form -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice-dollar me-2"></i>Billing Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="billingForm">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="row g-4">
+                            <!-- Patient Selection -->
+                            <div class="col-12">
+                                <div class="mb-4">
+                                    <label asp-for="Billing.PatientId" class="form-label fw-semibold">
+                                        <i class="fas fa-user-injured me-1"></i>Select Patient
+                                    </label>
+                                    <select asp-for="Billing.PatientId" class="form-select form-select-lg"
+                                            asp-items="ViewBag.PatientId" id="patientSelect">
+                                        <option value="">-- Select Patient --</option>
+                                    </select>
+                                    <span asp-validation-for="Billing.PatientId" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Dates Section -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.BillDate" class="form-label fw-semibold">
+                                        <i class="fas fa-calendar-day me-1"></i>Bill Date
+                                    </label>
+                                    <input asp-for="Billing.BillDate" type="date"
+                                           class="form-control"
+                                           value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    <span asp-validation-for="Billing.BillDate" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.DueDate" class="form-label fw-semibold">
+                                        <i class="fas fa-calendar-alt me-1"></i>Due Date
+                                    </label>
+                                    <input asp-for="Billing.DueDate" type="date"
+                                           class="form-control"
+                                           min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    <span asp-validation-for="Billing.DueDate" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Amounts Section -->
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.TotalAmount" class="form-label fw-semibold">
+                                        <i class="fas fa-money-bill-wave me-1"></i>Total Amount ($)
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="Billing.TotalAmount" type="number"
+                                               step="0.01" min="0"
+                                               class="form-control"
+                                               id="totalAmount"
+                                               placeholder="0.00" />
+                                    </div>
+                                    <span asp-validation-for="Billing.TotalAmount" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.PaidAmount" class="form-label fw-semibold">
+                                        <i class="fas fa-money-check me-1"></i>Paid Amount ($)
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="Billing.PaidAmount" type="number"
+                                               step="0.01" min="0"
+                                               class="form-control"
+                                               id="paidAmount"
+                                               placeholder="0.00" />
+                                    </div>
+                                    <span asp-validation-for="Billing.PaidAmount" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.Balance" class="form-label fw-semibold">
+                                        <i class="fas fa-balance-scale me-1"></i>Balance ($)
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="Billing.Balance" type="number"
+                                               step="0.01"
+                                               class="form-control bg-light"
+                                               id="balanceAmount"
+                                               readonly />
+                                    </div>
+                                    <span asp-validation-for="Billing.Balance" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Insurance Section -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.InsuranceClaimAmount" class="form-label fw-semibold">
+                                        <i class="fas fa-shield-alt me-1"></i>Insurance Claim Amount ($)
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="Billing.InsuranceClaimAmount" type="number"
+                                               step="0.01" min="0"
+                                               class="form-control"
+                                               placeholder="0.00" />
+                                    </div>
+                                    <span asp-validation-for="Billing.InsuranceClaimAmount" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Payment Status -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-credit-card me-1"></i>Payment Status
+                                    </label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio"
+                                                   asp-for="Billing.isPaid" id="isPaidTrue"
+                                                   value="true">
+                                            <label class="form-check-label text-success" for="isPaidTrue">
+                                                <i class="fas fa-check-circle me-1"></i>Paid
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio"
+                                                   asp-for="Billing.isPaid" id="isPaidFalse"
+                                                   value="false" checked>
+                                            <label class="form-check-label text-warning" for="isPaidFalse">
+                                                <i class="fas fa-clock me-1"></i>Pending
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <span asp-validation-for="Billing.isPaid" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Paid Date (Conditional) -->
+                            <div class="col-md-6" id="paidDateSection" style="display: none;">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.PaidDate" class="form-label fw-semibold">
+                                        <i class="fas fa-calendar-check me-1"></i>Paid Date
+                                    </label>
+                                    <input asp-for="Billing.PaidDate" type="date"
+                                           class="form-control"
+                                           max="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    <span asp-validation-for="Billing.PaidDate" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <!-- Created By (Hidden - Auto-filled) -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-user-edit me-1"></i>Created By
+                                    </label>
+                                    <input type="hidden" asp-for="Billing.CreatedBy" id="createdByField" />
+                                    <div class="form-control bg-light">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-user-circle me-2 text-primary"></i>
+                                            <span>@Model.CurrentUserName</span>
+                                            <span class="badge bg-success ms-2">Current User</span>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">You are creating this billing record</small>
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label asp-for="Billing.Notes" class="form-label fw-semibold">
+                                        <i class="fas fa-sticky-note me-1"></i>Notes
+                                    </label>
+                                    <textarea asp-for="Billing.Notes" class="form-control"
+                                              rows="4"
+                                              placeholder="Enter any billing notes or special instructions..."></textarea>
+                                    <span asp-validation-for="Billing.Notes" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                            <a asp-page="Index" class="btn btn-lg btn-outline-secondary px-4">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-lg btn-success px-4" id="submitBtn">
+                                <i class="fas fa-file-invoice me-2"></i>Create Billing Record
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview & Summary -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Bill Preview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="avatar avatar-xl rounded-circle bg-primary text-white mb-3 d-inline-flex align-items-center justify-content-center">
+                            <i class="fas fa-file-invoice-dollar fa-2x"></i>
+                        </div>
+                        <h5>Billing Summary</h5>
+                        <p class="text-muted">Preview of the billing information</p>
+                    </div>
+
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-medium">Bill Date:</span>
+                            <span id="previewBillDate">@DateTime.Now.ToString("MMM dd, yyyy")</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-medium">Due Date:</span>
+                            <span id="previewDueDate">--</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-medium">Total Amount:</span>
+                            <span class="fw-bold" id="previewTotalAmount">$0.00</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-medium">Paid Amount:</span>
+                            <span class="text-success" id="previewPaidAmount">$0.00</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-medium">Balance:</span>
+                            <span class="fw-bold" id="previewBalance">$0.00</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-medium">Status:</span>
+                            <span class="badge bg-warning" id="previewStatus">Pending</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>
+                            <strong>Note:</strong> This is a preview. Final amounts will be calculated based on your entries.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Help -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-question-circle me-2"></i>Quick Help</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled small">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Total Amount:</strong> Enter the total bill amount
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Paid Amount:</strong> Enter any partial payment received
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Balance:</strong> Automatically calculated
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Insurance:</strong> Enter insurance claim amount if applicable
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Status:</strong> Mark as paid when full payment is received
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
