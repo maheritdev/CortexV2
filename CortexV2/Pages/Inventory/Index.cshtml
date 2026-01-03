@@ -9,7 +9,7 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create" class="px-3 py-2 btn-outline-primary  rounded"> <i class="fa-solid fa-user-plus"></i> Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -87,9 +87,9 @@
                 @Html.DisplayFor(modelItem => item.LastUpdated)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.InventoryId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.InventoryId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.InventoryId">Delete</a>
+                <a class="btn btn-sm btn-outline-secondary me-2" asp-page="./Edit" asp-route-id="@item.InventoryId"> <i class="fas fa-edit"></i> Edit</a>
+                <a class="btn btn-sm btn-outline-primary me-2" asp-page="./Details" asp-route-id="@item.InventoryId"> <i class="fas fa-eye"></i> Details</a>
+                <a class="btn btn-sm btn-outline-danger" asp-page="./Delete" asp-route-id="@item.InventoryId"><i class="fas fa-trash"></i> Delete</a>
             </td>
         </tr>
 }

@@ -180,6 +180,138 @@
         .bg-medical {
             background-color: #fff4e8;
         }
+
+        .card {
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+            }
+
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #86b7fe;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            }
+
+        .form-control-lg, .form-select-lg {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+        }
+
+        .btn-lg {
+            padding: 0.75rem 2rem;
+        }
+
+        .breadcrumb {
+            background-color: transparent;
+            padding-left: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .breadcrumb-item a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: #0d6efd;
+        }
+
+        .card {
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #86b7fe;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            }
+
+        .form-control-lg, .form-select-lg {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+        }
+
+        .btn-lg {
+            padding: 0.75rem 2rem;
+        }
+
+        .breadcrumb {
+            background-color: transparent;
+            padding-left: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .breadcrumb-item a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: #0d6efd;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+        }
+
+        .bg-light {
+            background-color: #f8f9fa !important;
+        }
     </style>
 </head>
 <body>
@@ -369,6 +501,217 @@
             }
         }
 
+    </script>
+    <script>
+        // Form validation and submission handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('appointmentForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Date validation
+            const appointmentDate = document.querySelector('input[asp-for="Appointment.AppointmentDate"]');
+            if (appointmentDate) {
+                const today = new Date().toISOString().split('T')[0];
+                appointmentDate.min = today;
+            }
+
+            // Time validation
+            const startTime = document.querySelector('input[asp-for="Appointment.StartTime"]');
+            const endTime = document.querySelector('input[asp-for="Appointment.EndTime"]');
+
+            if (startTime && endTime) {
+                startTime.addEventListener('change', function() {
+                    if (endTime.value && this.value > endTime.value) {
+                        alert('Start time cannot be later than end time');
+                        this.value = '';
+                    }
+                });
+
+                endTime.addEventListener('change', function() {
+                    if (startTime.value && this.value < startTime.value) {
+                        alert('End time cannot be earlier than start time');
+                        this.value = '';
+                    }
+                });
+            }
+
+            // Form submission handling
+            form.addEventListener('submit', function(e) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Scheduling...';
+
+                // You can add additional validation here
+                const patientId = document.querySelector('select[asp-for="Appointment.PatientId"]').value;
+                const doctorId = document.querySelector('select[asp-for="Appointment.DoctorId"]').value;
+
+                if (!patientId || !doctorId) {
+                    e.preventDefault();
+                    alert('Please select both patient and doctor');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-calendar-plus me-2"></i>Create Appointment';
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('appointmentForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Format date and time inputs
+            formatDateTimeInputs();
+
+            // Set up time validation
+            setupTimeValidation();
+
+            // Form submission handling
+            form.addEventListener('submit', function(e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving Changes...';
+            });
+        });
+
+        function formatDateTimeInputs() {
+            // Format date input
+            const dateInput = document.querySelector('input[asp-for="Appointment.AppointmentDate"]');
+            if (dateInput && dateInput.value) {
+                try {
+                    const date = new Date(dateInput.value);
+                    if (!isNaN(date)) {
+                        dateInput.value = date.toISOString().split('T')[0];
+                    }
+                } catch (e) {
+                    console.log('Date formatting error:', e);
+                }
+            }
+
+            // Format time inputs
+            const timeInputs = [
+                document.querySelector('input[asp-for="Appointment.StartTime"]'),
+                document.querySelector('input[asp-for="Appointment.EndTime"]')
+            ];
+
+            timeInputs.forEach(input => {
+                if (input && input.value) {
+                    try {
+                        // If it's a DateTime object, extract time part
+                        if (input.value.includes(' ')) {
+                            const timePart = input.value.split(' ')[1];
+                            if (timePart) {
+                                input.value = timePart.substring(0, 5);
+                            }
+                        } else if (input.value.includes('T')) {
+                            // Handle ISO string
+                            const date = new Date(input.value);
+                            const hours = date.getHours().toString().padStart(2, '0');
+                            const minutes = date.getMinutes().toString().padStart(2, '0');
+                            input.value = `${hours}:${minutes}`;
+                        }
+                    } catch (e) {
+                        console.log('Time formatting error:', e);
+                    }
+                }
+            });
+        }
+
+        function setupTimeValidation() {
+            const startTime = document.querySelector('input[asp-for="Appointment.StartTime"]');
+            const endTime = document.querySelector('input[asp-for="Appointment.EndTime"]');
+
+            if (startTime && endTime) {
+                startTime.addEventListener('change', function() {
+                    if (endTime.value && this.value > endTime.value) {
+                        showAlert('Start time cannot be later than end time', 'warning');
+                        this.value = '';
+                    }
+                });
+
+                endTime.addEventListener('change', function() {
+                    if (startTime.value && this.value < startTime.value) {
+                        showAlert('End time cannot be earlier than start time', 'warning');
+                        this.value = '';
+                    }
+                });
+            }
+        }
+
+        function validateForm() {
+            const patientId = document.querySelector('select[asp-for="Appointment.PatientId"]').value;
+            const doctorId = document.querySelector('select[asp-for="Appointment.DoctorId"]').value;
+            const status = document.querySelector('select[asp-for="Appointment.Status"]').value;
+
+            if (!patientId || !doctorId || !status) {
+                showAlert('Please fill all required fields: Patient, Doctor, and Status', 'error');
+                return false;
+            }
+
+            return true;
+        }
+
+        function cancelAppointment() {
+            const cancellationReason = document.getElementById('cancellationReason').value;
+            const sendNotification = document.getElementById('sendNotification').checked;
+
+            // Update status to cancelled
+            const statusSelect = document.querySelector('select[asp-for="Appointment.Status"]');
+            statusSelect.value = 'Cancelled';
+
+            // Add cancellation note to notes
+            const notesTextarea = document.querySelector('textarea[asp-for="Appointment.Notes"]');
+            const currentDate = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            let cancellationNote = $"\n\n--- CANCELLATION ---\n";
+            cancellationNote += $"Date: {currentDate}\n";
+            cancellationNote += $"Reason: {cancellationReason || 'No reason provided'}\n";
+            cancellationNote += $"Notification Sent: {(sendNotification ? 'Yes' : 'No')}\n";
+            cancellationNote += $"Cancelled by: [Current User]\n";
+            cancellationNote += "-------------------";
+
+            notesTextarea.value += cancellationNote;
+
+            // Submit the form
+            document.getElementById('appointmentForm').submit();
+
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('cancelModal'));
+            if (modal) modal.hide();
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertClass = type === 'error' ? 'alert-danger' :
+                               type === 'warning' ? 'alert-warning' : 'alert-info';
+
+            // Create alert element
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; max-width: 400px;';
+            alertDiv.innerHTML = `
+                <strong>${type === 'error' ? 'Error!' : type === 'warning' ? 'Warning!' : 'Info!'}</strong> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            // Add to body
+            document.body.appendChild(alertDiv);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
     </script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
