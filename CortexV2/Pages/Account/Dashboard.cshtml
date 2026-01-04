@@ -7,91 +7,306 @@
 @attribute [Authorize]
 @{
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
-
     ViewData["Title"] = "Dashboard";
 }
 
-
 <!-- Main Content -->
 <div id="content">
-    <!-- Dashboard Content -->
-    <div class="container-fluid">
-        <!-- Page Heading -->
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
-            </a>
+    <!-- Welcome Header -->
+    <div class="container-fluid px-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center py-4 mb-4 border-bottom">
+            <div>
+                <h1 class="h2 mb-2">Welcome back, <span class="text-primary">@HttpContextAccessor.HttpContext?.User?.Identity?.Name</span>! 👋</h1>
+                <p class="text-muted mb-0">Here's what's happening with your hospital today.</p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <div class="btn-group">
+                    <button class="btn btn-outline-primary btn-sm" id="dateFilter">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        <span id="dateRange">Today</span>
+                        <i class="fas fa-chevron-down ms-2"></i>
+                    </button>
+                    <button class="btn btn-primary btn-sm ms-2" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Statistics Row -->
-        <div class="row">
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow h-100 py-2 card-stat">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Total Patients
+        <div class="row g-4 mb-5">
+            <!-- Total Patients Card -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card card-hover border-0 shadow-lg h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-muted small mb-2 fw-semibold">TOTAL PATIENTS</div>
+                                <h2 class="mb-0 fw-bold display-6">@Model.Dashboard.TotalPatients</h2>
+                                <div class="mt-2">
+                                    <span class="badge bg-success-subtle text-success">
+                                        <i class="fas fa-arrow-up me-1"></i>12% increase
+                                    </span>
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Dashboard.TotalPatients</div>
                             </div>
-                            <div class="col-auto">
-                                <i class="fas fa-user-injured fa-2x text-gray-300"></i>
+                            <div class="avatar avatar-lg bg-primary-subtle text-primary rounded-circle p-3">
+                                <i class="fas fa-user-injured fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between small text-muted">
+                                <span>Active patients</span>
+                                <span class="fw-semibold">@(Model.Dashboard.TotalPatients - 15)</span>
+                            </div>
+                            <div class="progress mt-1" style="height: 6px;">
+                                <div class="progress-bar bg-primary" style="width: @((Model.Dashboard.TotalPatients - 15) * 100 / Model.Dashboard.TotalPatients)%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 py-3">
+                        <a href="../Patients" class="text-decoration-none d-flex align-items-center justify-content-between">
+                            <span class="text-primary fw-semibold">View all patients</span>
+                            <i class="fas fa-arrow-right text-primary"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Appointments Card -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card card-hover border-0 shadow-lg h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-muted small mb-2 fw-semibold">TODAY'S APPOINTMENTS</div>
+                                <h2 class="mb-0 fw-bold display-6">@Model.Dashboard.TodaysAppointments</h2>
+                                <div class="mt-2">
+                                    <span class="badge bg-danger-subtle text-danger">
+                                        <i class="fas fa-clock me-1"></i>@(Model.Dashboard.TodaysAppointments - 2) pending
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="avatar avatar-lg bg-success-subtle text-success rounded-circle p-3">
+                                <i class="fas fa-calendar-check fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="avatar-group">
+                                        <div class="avatar avatar-sm bg-primary-subtle rounded-circle">
+                                            <i class="fas fa-user-md text-primary"></i>
+                                        </div>
+                                        <div class="avatar avatar-sm bg-info-subtle rounded-circle">
+                                            <i class="fas fa-user-nurse text-info"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <small class="text-muted">Next appointment in 1h 30min</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 py-3">
+                        <a href="../Appointment" class="text-decoration-none d-flex align-items-center justify-content-between">
+                            <span class="text-primary fw-semibold">Schedule new</span>
+                            <i class="fas fa-plus-circle text-success"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Rooms Card -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card card-hover border-0 shadow-lg h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-muted small mb-2 fw-semibold">AVAILABLE ROOMS</div>
+                                <h2 class="mb-0 fw-bold display-6">@Model.Dashboard.AvailableRooms<span class="fs-4 text-muted">/120</span></h2>
+                                <div class="mt-2">
+                                    <span class="badge bg-info-subtle text-info">
+                                        @((Model.Dashboard.AvailableRooms * 100 / 120).ToString("0"))% occupancy
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="avatar avatar-lg bg-warning-subtle text-warning rounded-circle p-3">
+                                <i class="fas fa-bed fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-hospital text-muted me-2"></i>
+                                    <small class="text-muted">ICU: 3 available</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-procedures text-muted me-2"></i>
+                                    <small class="text-muted">General: @(Model.Dashboard.AvailableRooms - 3)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 py-3">
+                        <a href="../Room" class="text-decoration-none d-flex align-items-center justify-content-between">
+                            <span class="text-primary fw-semibold">Manage rooms</span>
+                            <i class="fas fa-cogs text-warning"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Bills Card -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card card-hover border-0 shadow-lg h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="text-muted small mb-2 fw-semibold">PENDING BILLS</div>
+                                <h2 class="mb-0 fw-bold display-6">@Model.Dashboard.PendingBills</h2>
+                                <div class="mt-2">
+                                    <span class="badge bg-purple-subtle text-purple">
+                                        <i class="fas fa-money-bill-wave me-1"></i>$@(Model.Dashboard.PendingBills * 150) total
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="avatar avatar-lg bg-danger-subtle text-danger rounded-circle p-3">
+                                <i class="fas fa-money-bill-wave fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between small text-muted">
+                                <span>Average per bill</span>
+                                <span class="fw-semibold">$150</span>
+                            </div>
+                            <div class="progress mt-1" style="height: 6px;">
+                                <div class="progress-bar bg-danger" style="width: @(Model.Dashboard.PendingBills > 50 ? 100 : Model.Dashboard.PendingBills * 2)%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 py-3">
+                        <a href="../Billing" class="text-decoration-none d-flex align-items-center justify-content-between">
+                            <span class="text-primary fw-semibold">Process payments</span>
+                            <i class="fas fa-external-link-alt text-danger"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Charts -->
+        <div class="row g-4 mb-5">
+            <!-- Quick Actions -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg h-100">
+                    <div class="card-header bg-transparent border-0 py-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold"><i class="fas fa-bolt text-warning me-2"></i>Quick Actions</h5>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-filter me-1"></i> Filter
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">All Modules</a></li>
+                                    <li><a class="dropdown-item" href="#">Frequent</a></li>
+                                    <li><a class="dropdown-item" href="#">Recent</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3 col-sm-6">
+                                <a href="../Patients/Create" class="card action-card text-decoration-none">
+                                    <div class="card-body text-center p-4">
+                                        <div class="avatar avatar-xl bg-primary bg-opacity-10 text-primary rounded-circle mb-3">
+                                            <i class="fas fa-user-plus fa-2x"></i>
+                                        </div>
+                                        <h6 class="fw-semibold mb-2">New Patient</h6>
+                                        <small class="text-muted">Register new patient</small>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <a href="../Appointment/Create" class="card action-card text-decoration-none">
+                                    <div class="card-body text-center p-4">
+                                        <div class="avatar avatar-xl bg-success bg-opacity-10 text-success rounded-circle mb-3">
+                                            <i class="fas fa-calendar-plus fa-2x"></i>
+                                        </div>
+                                        <h6 class="fw-semibold mb-2">New Appointment</h6>
+                                        <small class="text-muted">Schedule appointment</small>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <a href="../Billing/Create" class="card action-card text-decoration-none">
+                                    <div class="card-body text-center p-4">
+                                        <div class="avatar avatar-xl bg-danger bg-opacity-10 text-danger rounded-circle mb-3">
+                                            <i class="fas fa-file-invoice-dollar fa-2x"></i>
+                                        </div>
+                                        <h6 class="fw-semibold mb-2">Create Bill</h6>
+                                        <small class="text-muted">Generate invoice</small>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <a href="../Medication/Create" class="card action-card text-decoration-none">
+                                    <div class="card-body text-center p-4">
+                                        <div class="avatar avatar-xl bg-info bg-opacity-10 text-info rounded-circle mb-3">
+                                            <i class="fas fa-prescription fa-2x"></i>
+                                        </div>
+                                        <h6 class="fw-semibold mb-2">New Prescription</h6>
+                                        <small class="text-muted">Write prescription</small>
+                                    </div>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow h-100 py-2 card-stat">
+            <!-- System Status -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-lg h-100">
+                    <div class="card-header bg-transparent border-0 py-4">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-server text-info me-2"></i>System Status</h5>
+                    </div>
                     <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Today's Appointments
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Dashboard.TodaysAppointments</div>
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Server Uptime</span>
+                                <span class="fw-semibold small text-success">99.8%</span>
                             </div>
-                            <div class="col-auto">
-                                <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success" style="width: 99.8%"></div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow h-100 py-2 card-stat">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    Available Rooms
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Dashboard.AvailableRooms/120</div>
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Storage Usage</span>
+                                <span class="fw-semibold small text-info">65%</span>
                             </div>
-                            <div class="col-auto">
-                                <i class="fas fa-bed fa-2x text-gray-300"></i>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-info" style="width: 65%"></div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow h-100 py-2 card-stat">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Pending Bills
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Dashboard.PendingBills</div>
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Memory Usage</span>
+                                <span class="fw-semibold small text-warning">42%</span>
                             </div>
-                            <div class="col-auto">
-                                <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-warning" style="width: 42%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Network Traffic</span>
+                                <span class="fw-semibold small text-danger">28%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-danger" style="width: 28%"></div>
                             </div>
                         </div>
                     </div>
@@ -100,122 +315,226 @@
         </div>
 
         <!-- Modules Grid -->
-        <div class="row">
-            <div class="col-lg-12 mb-4">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">System Modules</h6>
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-header bg-transparent border-0 py-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold"><i class="fas fa-th-large text-primary me-2"></i>System Modules</h5>
+                            <div class="input-group input-group-sm" style="width: 250px;">
+                                <span class="input-group-text bg-transparent border-end-0">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" id="moduleSearch" placeholder="Search modules...">
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <div class="row">
+                        <div class="row g-4" id="modulesGrid">
                             <!-- Patient Management -->
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card bg-patient module-card">
-                                    <div class="card-body text-center">
-                                        <div class="module-icon">
-                                            <i class="fas fa-user-injured"></i>
+                            <div class="col-xl-3 col-lg-4 col-md-6">
+                                <div class="card module-card h-100 border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="avatar avatar-lg bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3">
+                                                <i class="fas fa-user-injured fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Patients Management</h6>
+                                                <small class="text-muted">@Model.Dashboard.TotalPatients active patients</small>
+                                            </div>
                                         </div>
-                                        <h5 class="card-title">Patients Management</h5>
-                                        <p class="card-text">Manage patient records, admissions and medical history</p>
-                                        <a href="../Patients" class="btn btn-sm btn-primary">Access Module</a>
+                                        <p class="text-muted small mb-4">Manage patient records, admissions and medical history with full HIPAA compliance.</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a href="../Patients" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-external-link-alt me-1"></i> Access
+                                            </a>
+                                            <div class="text-muted small">
+                                                <i class="fas fa-users me-1"></i> 12 online
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Appointments -->
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card bg-appointment module-card">
-                                    <div class="card-body text-center">
-                                        <div class="module-icon">
-                                            <i class="fas fa-calendar-check"></i>
+                            <div class="col-xl-3 col-lg-4 col-md-6">
+                                <div class="card module-card h-100 border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="avatar avatar-lg bg-success bg-opacity-10 text-success rounded-circle p-3 me-3">
+                                                <i class="fas fa-calendar-check fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Appointments</h6>
+                                                <small class="text-muted">@Model.Dashboard.TodaysAppointments today</small>
+                                            </div>
                                         </div>
-                                        <h5 class="card-title">Appointments</h5>
-                                        <p class="card-text">Schedule and manage patient appointments</p>
-                                         <a href="../Appointment" class="btn btn-sm btn-primary">Access Module</a>
+                                        <p class="text-muted small mb-4">Schedule, manage, and track patient appointments with real-time notifications.</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a href="../Appointment" class="btn btn-sm btn-success">
+                                                <i class="fas fa-external-link-alt me-1"></i> Access
+                                            </a>
+                                            <div class="text-muted small">
+                                                <i class="fas fa-clock me-1"></i> 2 pending
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Staff Management -->
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card module-card">
-                                    <div class="card-body text-center">
-                                        <div class="module-icon">
-                                            <i class="fas fa-user-md"></i>
+                            <div class="col-xl-3 col-lg-4 col-md-6">
+                                <div class="card module-card h-100 border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="avatar avatar-lg bg-purple bg-opacity-10 text-purple rounded-circle p-3 me-3">
+                                                <i class="fas fa-user-md fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Staff Management</h6>
+                                                <small class="text-muted">45 active staff</small>
+                                            </div>
                                         </div>
-                                        <h5 class="card-title">Staff Management</h5>
-                                        <p class="card-text">Manage doctors, staff and departments</p>
-                                        <a href="../Staff" class="btn btn-sm btn-primary">Access Module</a>
+                                        <p class="text-muted small mb-4">Manage doctors, nurses, and administrative staff with role-based access control.</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a href="../Staff" class="btn btn-sm btn-purple">
+                                                <i class="fas fa-external-link-alt me-1"></i> Access
+                                            </a>
+                                            <div class="text-muted small">
+                                                <i class="fas fa-user-clock me-1"></i> 8 on shift
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Billing -->
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card bg-billing module-card">
-                                    <div class="card-body text-center">
-                                        <div class="module-icon">
-                                            <i class="fas fa-money-bill-wave"></i>
+                            <div class="col-xl-3 col-lg-4 col-md-6">
+                                <div class="card module-card h-100 border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="avatar avatar-lg bg-danger bg-opacity-10 text-danger rounded-circle p-3 me-3">
+                                                <i class="fas fa-money-bill-wave fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Billing & Payments</h6>
+                                                <small class="text-muted">@Model.Dashboard.PendingBills pending bills</small>
+                                            </div>
                                         </div>
-                                        <h5 class="card-title">Billing & Payments</h5>
-                                        <p class="card-text">Manage billing, payments and financial records</p>
-                                        <a href="../Billing" class="btn btn-sm btn-primary">Access Module</a>
+                                        <p class="text-muted small mb-4">Generate invoices, process payments, and manage financial records with audit trails.</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a href="../Billing" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-external-link-alt me-1"></i> Access
+                                            </a>
+                                            <div class="text-muted small">
+                                                <i class="fas fa-money-bill me-1"></i> $@(Model.Dashboard.PendingBills * 150)
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Pharmacy -->
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card module-card">
-                                    <div class="card-body text-center">
-                                        <div class="module-icon">
-                                            <i class="fas fa-pills"></i>
+                            <div class="col-xl-3 col-lg-4 col-md-6">
+                                <div class="card module-card h-100 border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="avatar avatar-lg bg-info bg-opacity-10 text-info rounded-circle p-3 me-3">
+                                                <i class="fas fa-pills fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Pharmacy</h6>
+                                                <small class="text-muted">1,245 medications</small>
+                                            </div>
                                         </div>
-                                        <h5 class="card-title">Pharmacy</h5>
-                                        <p class="card-text">Manage prescriptions and medications</p>
-                                        <a href="../Medication" class="btn btn-sm btn-primary">Access Module</a>
+                                        <p class="text-muted small mb-4">Manage prescriptions, medication inventory, and drug interactions with alerts.</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a href="../Medication" class="btn btn-sm btn-info">
+                                                <i class="fas fa-external-link-alt me-1"></i> Access
+                                            </a>
+                                            <div class="text-muted small">
+                                                <i class="fas fa-prescription me-1"></i> 15 today
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Laboratory -->
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card module-card">
-                                    <div class="card-body text-center">
-                                        <div class="module-icon">
-                                            <i class="fas fa-microscope"></i>
+                            <div class="col-xl-3 col-lg-4 col-md-6">
+                                <div class="card module-card h-100 border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="avatar avatar-lg bg-warning bg-opacity-10 text-warning rounded-circle p-3 me-3">
+                                                <i class="fas fa-microscope fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Laboratory</h6>
+                                                <small class="text-muted">23 pending tests</small>
+                                            </div>
                                         </div>
-                                        <h5 class="card-title">Laboratory</h5>
-                                        <p class="card-text">Manage lab tests and orders</p>
-                                        <a href="../Laborder" class="btn btn-sm btn-primary">Access Module</a>
+                                        <p class="text-muted small mb-4">Process lab tests, generate reports, and manage lab orders with digital signatures.</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a href="../Laborder" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-external-link-alt me-1"></i> Access
+                                            </a>
+                                            <div class="text-muted small">
+                                                <i class="fas fa-vial me-1"></i> 8 results ready
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Inventory -->
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card module-card">
-                                    <div class="card-body text-center">
-                                        <div class="module-icon">
-                                            <i class="fas fa-warehouse"></i>
+                            <div class="col-xl-3 col-lg-4 col-md-6">
+                                <div class="card module-card h-100 border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="avatar avatar-lg bg-teal bg-opacity-10 text-teal rounded-circle p-3 me-3">
+                                                <i class="fas fa-warehouse fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Inventory</h6>
+                                                <small class="text-muted">78 low stock items</small>
+                                            </div>
                                         </div>
-                                        <h5 class="card-title">Inventory</h5>
-                                        <p class="card-text">Manage hospital inventory and transactions</p>
-                                        <a href="../Inventory" class="btn btn-sm btn-primary">Access Module</a>
+                                        <p class="text-muted small mb-4">Track medical supplies, manage stock levels, and automate reordering processes.</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a href="../Inventory" class="btn btn-sm btn-teal">
+                                                <i class="fas fa-external-link-alt me-1"></i> Access
+                                            </a>
+                                            <div class="text-muted small">
+                                                <i class="fas fa-box me-1"></i> 4,562 items
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Rooms -->
-                            <div class="col-xl-3 col-md-6 mb-4">
-                                <div class="card module-card">
-                                    <div class="card-body text-center">
-                                        <div class="module-icon">
-                                            <i class="fas fa-bed"></i>
+                            <div class="col-xl-3 col-lg-4 col-md-6">
+                                <div class="card module-card h-100 border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-start mb-3">
+                                            <div class="avatar avatar-lg bg-pink bg-opacity-10 text-pink rounded-circle p-3 me-3">
+                                                <i class="fas fa-bed fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Room Management</h6>
+                                                <small class="text-muted">@Model.Dashboard.AvailableRooms available</small>
+                                            </div>
                                         </div>
-                                        <h5 class="card-title">Room Management</h5>
-                                        <p class="card-text">Manage room allocation and availability</p>
-                                        <a href="../Room" class="btn btn-sm btn-primary">Access Module</a>
+                                        <p class="text-muted small mb-4">Allocate rooms, manage bed availability, and track patient room assignments.</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a href="../Room" class="btn btn-sm btn-pink">
+                                                <i class="fas fa-external-link-alt me-1"></i> Access
+                                            </a>
+                                            <div class="text-muted small">
+                                                <i class="fas fa-procedures me-1"></i> 42 occupied
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -225,32 +544,88 @@
             </div>
         </div>
 
-        <!-- Recent Activity & Stats -->
-        <div class="row">
-            <div class="col-lg-8 mb-4">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Recent Appointments</h6>
+        <!-- Recent Activity -->
+        <div class="row mb-5">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg h-100">
+                    <div class="card-header bg-transparent border-0 py-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold"><i class="fas fa-history text-secondary me-2"></i>Recent Appointments</h5>
+                            <a href="../Appointment" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-bordered" width="100%" cellspacing="0">
-                                <thead>
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
                                     <tr>
-                                        <th>Patient</th>
+                                        <th class="ps-4">Patient</th>
                                         <th>Doctor</th>
+                                        <th>Department</th>
                                         <th>Time</th>
                                         <th>Status</th>
+                                        <th class="pe-4">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var appt in Model.Dashboard.RecentAppointments)
                                     {
                                         <tr>
-                                            <td>@appt.Patient</td>
-                                            <td>@appt.Doctor</td>
-                                            <td>@appt.Time.ToString("hh:mm tt")</td>
-                                            <td>@appt.Status</td>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar avatar-sm bg-primary-subtle text-primary rounded-circle me-3">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-semibold">@appt.Patient</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar avatar-sm bg-success-subtle text-success rounded-circle me-2">
+                                                        <i class="fas fa-user-md"></i>
+                                                    </div>
+                                                    <span>@appt.Doctor</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if (appt.Doctor.Contains("Cardio"))
+                                                {
+                                                    <span class="badge bg-danger-subtle text-danger">Cardiology</span>
+                                                }
+                                                else if (appt.Doctor.Contains("Neuro"))
+                                                {
+                                                    <span class="badge bg-purple-subtle text-purple">Neurology</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-primary-subtle text-primary">General</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div>@appt.Time.ToString("hh:mm tt")</div>
+                                                <small class="text-muted">@appt.Time.ToString("MMM dd")</small>
+                                            </td>
+                                            <td>
+                                                @if (appt.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-success">@appt.Status</span>
+                                                }
+                                                else if (appt.Status == "Pending")
+                                                {
+                                                    <span class="badge bg-warning">@appt.Status</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@appt.Status</span>
+                                                }
+                                            </td>
+                                            <td class="pe-4">
+                                                <button class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
                                         </tr>
                                     }
                                 </tbody>
@@ -260,32 +635,35 @@
                 </div>
             </div>
 
-            <div class="col-lg-4 mb-4">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">System Status</h6>
+            <!-- Upcoming Events -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-lg h-100">
+                    <div class="card-header bg-transparent border-0 py-4">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-calendar-day text-warning me-2"></i>Upcoming Events</h5>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            <p class="mb-1">Server Uptime</p>
-                            <div class="progress mb-4">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 99.8%" aria-valuenow="99.8" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-
-                            <p class="mb-1">Storage Usage</p>
-                            <div class="progress mb-4">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-
-                            <p class="mb-1">Memory Usage</p>
-                            <div class="progress mb-4">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: 42%" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-
-                            <p class="mb-1">Network Traffic</p>
-                            <div class="progress">
-                                <div class="progress-bar bg-danger" role="progressbar" style="width: 28%" aria-valuenow="28" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
+                        <div class="timeline">
+                            @foreach (var evt in new[] {
+                                                        new { Title = "Staff Meeting", Time = "10:00 AM", Type = "meeting" },
+                                                        new { Title = "Equipment Maintenance", Time = "2:30 PM", Type = "maintenance" },
+                                                        new { Title = "Training Session", Time = "4:00 PM", Type = "training" }
+                                                        })
+                            {
+                                <div class="timeline-item mb-4">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0">
+                                            <div class="avatar avatar-sm rounded-circle @(evt.Type == "meeting" ? "bg-primary-subtle text-primary" : evt.Type == "maintenance" ? "bg-warning-subtle text-warning" : "bg-info-subtle text-info") me-3">
+                                                <i class="fas fa-@(evt.Type == "meeting" ? "users" : evt.Type == "maintenance" ? "tools" : "chalkboard-teacher")"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1 fw-semibold">@evt.Title</h6>
+                                            <p class="text-muted small mb-2">Today, @evt.Time</p>
+                                            <button class="btn btn-sm btn-outline-secondary">Add to calendar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -293,32 +671,89 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Module search functionality
+        const moduleSearch = document.getElementById('moduleSearch');
+        const modulesGrid = document.getElementById('modulesGrid');
 
-@* <div class="p-6 bg-white rounded shadow max-w-3xl mx-auto mt-8">
-    <h2 class="text-xl font-semibold">Welcome, @Model.DisplayName</h2>
-    <div class="mt-4">
-        <h3 class="font-medium">Profile</h3>
-        <dl class="grid grid-cols-1 gap-2 mt-2">
-            <div><strong>Type:</strong> @Model.UserType</div>
-            <div><strong>Token Expires At:</strong> @Model.TokenExpiry</div>
-            <div><strong>Token Expires At:</strong> @Model.Token</div>
-            <div><strong>Raw Token (hidden by default):</strong> <button class="ml-2 px-2 py-1 border" onclick="toggleToken">Show/Hide</button></div>
-            <div id="tokenBlock" style="display:none; word-break:break-all;">@Model.Token</div>
-        </dl>
-    </div>
+        moduleSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const modules = modulesGrid.querySelectorAll('.module-card');
 
+            modules.forEach(module => {
+                const title = module.querySelector('h6').textContent.toLowerCase();
+                const description = module.querySelector('p').textContent.toLowerCase();
 
-    <div class="mt-6">
-        <a asp-page="/Index" class="text-sm text-gray-500">Back to home</a>
-    </div>
-    <!-- Add this to your Dashboard.cshtml -->
-    <div class="mt-6">
-        <form method="post" asp-page-handler="Logout">
-            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded">Logout</button>
-        </form>
-        <a asp-page="/Index" class="text-sm text-gray-500">Back to home</a>
-    </div>
-</div>
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    module.style.display = 'block';
+                    module.classList.add('animate__animated', 'animate__fadeIn');
+                } else {
+                    module.style.display = 'none';
+                }
+            });
+        });
 
+        // Date filter functionality
+        const dateFilter = document.getElementById('dateFilter');
+        const dateRange = document.getElementById('dateRange');
 
- *@
+        dateFilter.addEventListener('click', function() {
+            // This would typically open a date picker
+            // For demo, just cycle through options
+            const options = ['Today', 'This Week', 'This Month', 'Custom Range'];
+            const currentIndex = options.indexOf(dateRange.textContent);
+            const nextIndex = (currentIndex + 1) % options.length;
+            dateRange.textContent = options[nextIndex];
+
+            // Here you would reload data based on selected date range
+            console.log('Filtering for:', options[nextIndex]);
+        });
+
+        // Refresh button functionality
+        const refreshBtn = document.getElementById('refreshBtn');
+
+        refreshBtn.addEventListener('click', function() {
+            // Add rotation animation
+            refreshBtn.querySelector('i').classList.add('fa-spin');
+
+            // Simulate data refresh
+            setTimeout(() => {
+                refreshBtn.querySelector('i').classList.remove('fa-spin');
+
+                // Show success toast (you would add toastr or similar)
+                if (typeof toastr !== 'undefined') {
+                    toastr.success('Dashboard data refreshed successfully');
+                }
+            }, 1000);
+        });
+
+        // Card hover effects
+        const cards = document.querySelectorAll('.card-hover');
+        cards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A' || e.target.closest('a')) {
+                    return; // Let link clicks through
+                }
+
+                const link = this.querySelector('a[href]');
+                if (link) {
+                    window.location.href = link.href;
+                }
+            });
+        });
+
+        // Animate stats on load
+        const stats = document.querySelectorAll('.display-6');
+        stats.forEach((stat, index) => {
+            stat.style.opacity = '0';
+            stat.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                stat.style.transition = 'all 0.5s ease';
+                stat.style.opacity = '1';
+                stat.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>

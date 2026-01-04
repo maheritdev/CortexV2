@@ -2,87 +2,724 @@
 @model Cortex.UI.Areas.Web.Pages.Account.LoginModel
 @{
     ViewData["Title"] = "Login";
+    Layout = null; // Remove layout for standalone login page
 }
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Cortex</title>
 
-@* <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                </div>
-                <div class="card-body">
-                    <form method="post" id="loginForm">
-                        @Html.AntiForgeryToken()
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-                        <div class="mb-3">
-                            <label asp-for="Username" class="form-label" name="Username">Username</label>
-                            <input asp-for="Username" class="form-control" autocomplete="username" name="Username"/>
-                            <span asp-validation-for="Username" class="text-danger"></span>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <!-- Toastr for notifications -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <style>
+        :root {
+            --primary-color: #2a5bd7;
+            --secondary-color: #4cc9c8;
+            --accent-color: #ff6b6b;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --gradient-start: #2a5bd7;
+            --gradient-end: #4cc9c8;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+            .login-container:hover {
+                box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+                transform: translateY(-5px);
+            }
+
+        .login-left {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .login-left::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+                background-size: 50px 50px;
+                animation: float 20s linear infinite;
+            }
+
+            .login-left::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+                background-size: cover;
+            }
+
+        .brand-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 3rem;
+        }
+
+            .feature-list li {
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 0.95rem;
+            }
+
+            .feature-list i {
+                color: var(--secondary-color);
+                font-size: 1.2rem;
+            }
+
+        .login-right {
+            padding: 4rem 3rem;
+        }
+
+        .form-control-lg {
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+            .form-control-lg:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(42, 91, 215, 0.1);
+                transform: translateY(-2px);
+            }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+            .toggle-password:hover {
+                color: var(--primary-color);
+            }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn-login::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                transition: left 0.5s ease;
+            }
+
+            .btn-login:hover::after {
+                left: 100%;
+            }
+
+            .btn-login:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(42, 91, 215, 0.3);
+            }
+
+            .btn-login:active {
+                transform: translateY(0);
+            }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 2rem 0;
+            color: #6c757d;
+        }
+
+            .divider::before,
+            .divider::after {
+                content: '';
+                flex: 1;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .divider span {
+                padding: 0 1rem;
+                font-size: 0.9rem;
+            }
+
+        .social-login {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-social {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            background: white;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+            .btn-social:hover {
+                background: #f8f9fa;
+                border-color: var(--primary-color);
+                color: var(--primary-color);
+                transform: translateY(-2px);
+            }
+
+        .forgot-password {
+            text-decoration: none;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+            .forgot-password:hover {
+                color: var(--gradient-end);
+                text-decoration: underline;
+            }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+
+        .alert-animate {
+            animation: shake 0.5s ease;
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .theme-toggle-btn {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+            .theme-toggle-btn:hover {
+                transform: rotate(30deg);
+                box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            }
+
+        /* Dark theme */
+        [data-bs-theme="dark"] body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        [data-bs-theme="dark"] .login-container {
+            background: #2d3748;
+            color: #e2e8f0;
+        }
+
+        [data-bs-theme="dark"] .form-control-lg {
+            background: #4a5568;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+
+            [data-bs-theme="dark"] .form-control-lg:focus {
+                background: #4a5568;
+                border-color: var(--primary-color);
+                color: #e2e8f0;
+            }
+
+        [data-bs-theme="dark"] .form-label {
+            color: #cbd5e0;
+        }
+
+        [data-bs-theme="dark"] .btn-social {
+            background: #4a5568;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+
+            [data-bs-theme="dark"] .btn-social:hover {
+                background: #5a6578;
+                color: #e2e8f0;
+            }
+
+        [data-bs-theme="dark"] .divider {
+            color: #a0aec0;
+        }
+
+            [data-bs-theme="dark"] .divider::before,
+            [data-bs-theme="dark"] .divider::after {
+                border-bottom-color: #4a5568;
+            }
+
+        /* Security indicators */
+        .password-strength {
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .strength-meter {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .strength-weak {
+            width: 33%;
+            background-color: #dc3545;
+        }
+
+        .strength-medium {
+            width: 66%;
+            background-color: #ffc107;
+        }
+
+        .strength-strong {
+            width: 100%;
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <div class="theme-toggle-btn" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-12 col-md-10">
+                <div class="login-container animate__animated animate__fadeIn">
+                    <div class="row g-0">
+                        <!-- Left Panel -->
+                        <div class="col-lg-6 d-none d-lg-block">
+                            <div class="login-left">
+                                <div class="brand-logo">
+                                    <i class="fas fa-brain"></i>
+                                    <span>Cortex</span>
+                                </div>
+                                <p class="brand-subtitle">
+                                    Advanced Healthcare Management System
+                                </p>
+
+                                <ul class="feature-list">
+                                    <li>
+                                        <i class="fas fa-shield-alt"></i>
+                                        <span>Enterprise-grade Security</span>
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-chart-line"></i>
+                                        <span>Real-time Analytics Dashboard</span>
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-users"></i>
+                                        <span>Multi-user Collaboration</span>
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-mobile-alt"></i>
+                                        <span>Mobile Responsive Design</span>
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-database"></i>
+                                        <span>HIPAA Compliant Data Storage</span>
+                                    </li>
+                                </ul>
+
+                                <div class="mt-5">
+                                    <small class="opacity-75">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Version 2.5.1 • Last updated: Today
+                                    </small>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Password" class="form-label">Password</label>
-                            <input asp-for="Password" type="password" class="form-control" autocomplete="current-password" name="Password" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
+                        <!-- Right Panel -->
+                        <div class="col-lg-6 col-md-12">
+                            <div class="login-right">
+                                <div class="text-center mb-5">
+                                    <h2 class="fw-bold mb-1">Welcome Back</h2>
+                                    <p class="text-muted">Sign in to your Cortex account</p>
+                                </div>
 
-                        
+                                <form method="post" id="loginForm" novalidate>
+                                    @Html.AntiForgeryToken()
 
-                        <div class="d-flex align-items-center gap-2">
-                            <button type="submit" class="btn btn-primary">Sign In</button>
-                            <a asp-page="/Index" class="text-muted">Back</a>
-                        </div>
+                                    <!-- Username Field -->
+                                    <div class="mb-4">
+                                        <label asp-for="Username" class="form-label">
+                                            <i class="fas fa-user me-1"></i> Username or Email
+                                        </label>
+                                        <input asp-for="Username"
+                                               class="form-control form-control-lg"
+                                               autocomplete="username"
+                                               placeholder="Enter your username or email"
+                                               required>
+                                        <span asp-validation-for="Username" class="text-danger small mt-1 d-block"></span>
+                                    </div>
 
-                        <div class="text-muted small mt-3">
-                            Use seeded accounts: admin / AdminPassword123! or patient1 / PatientPassword123!
+                                    <!-- Password Field -->
+                                    <div class="mb-4">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <label asp-for="Password" class="form-label">
+                                                <i class="fas fa-lock me-1"></i> Password
+                                            </label>
+                                            <a href="/Account/ForgotPassword" class="forgot-password">
+                                                Forgot Password?
+                                            </a>
+                                        </div>
+                                        <div class="password-container">
+                                            <input asp-for="Password"
+                                                   type="password"
+                                                   class="form-control form-control-lg"
+                                                   autocomplete="current-password"
+                                                   placeholder="Enter your password"
+                                                   id="passwordInput"
+                                                   required>
+                                            <button type="button" class="toggle-password" id="togglePassword">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="password-strength mt-2">
+                                            <div class="strength-meter" id="passwordStrength"></div>
+                                        </div>
+                                        <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                                    </div>
+
+                                   
+                                    <!-- Error Message -->
+                                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                                    {
+                                        <div class="alert alert-danger alert-animate mb-4" role="alert">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            @Model.ErrorMessage
+                                        </div>
+                                    }
+
+                                    <!-- Login Button -->
+                                    <div class="mb-4">
+                                        <button type="submit"
+                                                class="btn btn-login"
+                                                id="loginButton">
+                                            <div class="loading-spinner" id="loginSpinner"></div>
+                                            <span id="loginText">Sign In</span>
+                                        </button>
+                                    </div>
+
+
+                                </form>
+
+                                <!-- Demo Credentials (Remove in production) -->
+                                <div class="mt-5 pt-3 border-top">
+                                    <div class="alert alert-info mb-0">
+                                        <div class="d-flex">
+                                            <i class="fas fa-info-circle me-2 mt-1"></i>
+                                            <div>
+                                                <small class="fw-bold">Demo Credentials:</small><br>
+                                                <small class="d-block">Username: <code>mchen</code></small>
+                                                <small class="d-block">Password: <code>AdminPassword123!</code></small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div> *@
-<section class="vh-100">
-    <div class="container-fluid h-custom">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-md-9 col-lg-6 col-xl-5">
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
-                     class="img-fluid" alt="Sample image">
-            </div>
-            <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-                <form method="post" id="loginForm">
-                    @Html.AntiForgeryToken()
 
-                    <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-                        <h2 class="text-center">Sign in to Cortex</h2>
-                    </div> <div data-mdb-input-init class="form-outline mb-4">
-                        <label asp-for="Username" class="form-label" name="Username">Username</label>
-                        <input asp-for="Username" class="form-control form-control-lg" autocomplete="username" name="Username" />
-                        <span asp-validation-for="Username" class="text-danger"></span>
-                    </div>
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-                    <div data-mdb-input-init class="form-outline mb-3">
-                        <label asp-for="Password" class="form-label">Password</label>
-                        <input asp-for="Password" type="password" class="form-control form-control-lg" autocomplete="current-password" name="Password" />
-                        AdminPassword123!
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
-                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-                    {
-                        <div class="alert alert-danger mb-3">
-                            @Model.ErrorMessage
-                        </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme Toggle
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('i');
+
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+
+                themeIcon.className = newTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+
+                toastr.success(`Switched to ${newTheme} theme`, '', {
+                    positionClass: 'toast-top-right',
+                    timeOut: 2000
+                });
+            });
+
+            // Set initial theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            themeIcon.className = savedTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+
+            // Password Toggle
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleIcon = togglePassword.querySelector('i');
+
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                toggleIcon.className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+            });
+
+            // Password Strength Indicator
+            const passwordStrength = document.getElementById('passwordStrength');
+
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+
+                // Length check
+                if (password.length >= 8) strength += 25;
+                if (password.length >= 12) strength += 15;
+
+                // Complexity checks
+                if (/[A-Z]/.test(password)) strength += 20;
+                if (/[0-9]/.test(password)) strength += 20;
+                if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+
+                // Update strength meter
+                passwordStrength.className = 'strength-meter';
+
+                if (strength <= 40) {
+                    passwordStrength.classList.add('strength-weak');
+                } else if (strength <= 70) {
+                    passwordStrength.classList.add('strength-medium');
+                } else {
+                    passwordStrength.classList.add('strength-strong');
+                }
+            });
+
+            // Form Submission
+            const loginForm = document.getElementById('loginForm');
+            const loginButton = document.getElementById('loginButton');
+            const loginText = document.getElementById('loginText');
+            const loginSpinner = document.getElementById('loginSpinner');
+
+            loginForm.addEventListener('submit', function(e) {
+                const username = document.querySelector('[name="Username"]').value.trim();
+                const password = document.querySelector('[name="Password"]').value.trim();
+
+                if (!username || !password) {
+                    e.preventDefault();
+
+                    if (!username) {
+                        toastr.error('Please enter your username or email');
+                    } else if (!password) {
+                        toastr.error('Please enter your password');
                     }
 
-                    <div class="text-center text-lg-start mt-4 pt-2">
-                        <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
-                                style="padding-left: 2.5rem; padding-right: 2.5rem;">
-                            Login
-                        </button>
-                    </div>
+                    return;
+                }
 
-                </form>
-            </div>
-        </div>
-    </div>
-</section>
+                // Show loading state
+                loginButton.disabled = true;
+                loginText.textContent = 'Authenticating...';
+                loginSpinner.style.display = 'inline-block';
+
+                // Simulate network delay for demo (remove in production)
+                setTimeout(() => {
+                    loginButton.disabled = false;
+                    loginText.textContent = 'Sign In';
+                    loginSpinner.style.display = 'none';
+                }, 2000);
+            });
+
+            // Auto-fill demo credentials for testing
+            const demoCredentials = document.querySelector('.alert-info');
+            if (demoCredentials) {
+                demoCredentials.addEventListener('click', function() {
+                    document.querySelector('[name="Username"]').value = 'mchen';
+                    document.querySelector('[name="Password"]').value = 'AdminPassword123!';
+                    passwordInput.dispatchEvent(new Event('input'));
+
+                    toastr.info('Demo credentials loaded', '', {
+                        positionClass: 'toast-top-right',
+                        timeOut: 2000
+                    });
+                });
+            }
+
+            // Handle Enter key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !loginButton.disabled) {
+                    loginForm.dispatchEvent(new Event('submit'));
+                }
+            });
+
+            // Browser autofill detection
+            const checkAutoFill = setInterval(() => {
+                if (passwordInput.matches(':-webkit-autofill') ||
+                    passwordInput.matches(':autofill')) {
+                    passwordInput.dispatchEvent(new Event('input'));
+                    clearInterval(checkAutoFill);
+                }
+            }, 100);
+
+            // Remove check after 5 seconds
+            setTimeout(() => clearInterval(checkAutoFill), 5000);
+
+            // Add subtle animation to form elements
+            const formElements = document.querySelectorAll('.form-control-lg');
+            formElements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 100}ms`;
+                element.classList.add('animate__animated', 'animate__fadeInUp');
+            });
+
+            // Initialize Toastr
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "4000"
+            };
+
+            // Security warning for password field
+            passwordInput.addEventListener('focus', function() {
+                if (this.value.includes('AdminPassword123!')) {
+                    toastr.warning('Demo password detected. Change in production!', 'Security Notice', {
+                        timeOut: 6000
+                    });
+                }
+            });
+        });
+
+        // Prevent form submission on Enter key in input fields unless button is focused
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'submit') {
+                if (!e.target.closest('form').querySelector('button:focus')) {
+                    e.preventDefault();
+                }
+            }
+        });
+    </script>
+
+    <!-- Validation Scripts -->
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+</body>
+</html>
