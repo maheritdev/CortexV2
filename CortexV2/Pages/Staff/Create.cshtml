@@ -2,104 +2,332 @@
 @model Cortex.Pages.Staff.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create New Staff";
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Create New Staff Member</h1>
+            <p class="mb-0">Add a new staff member to the system</p>
+        </div>
+        <div>
+            <a asp-page="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back to List
+            </a>
+        </div>
+    </div>
 
-<h4>Staff</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Staff.FirstName" class="control-label"></label>
-                <input asp-for="Staff.FirstName" class="form-control" />
-                <span asp-validation-for="Staff.FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.LastName" class="control-label"></label>
-                <input asp-for="Staff.LastName" class="form-control" />
-                <span asp-validation-for="Staff.LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.Gender" class="control-label"></label>
-                <input asp-for="Staff.Gender" class="form-control" />
-                <span asp-validation-for="Staff.Gender" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.DateOfBirth" class="control-label"></label>
-                <input asp-for="Staff.DateOfBirth" class="form-control" />
-                <span asp-validation-for="Staff.DateOfBirth" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.ContactNumber" class="control-label"></label>
-                <input asp-for="Staff.ContactNumber" class="form-control" />
-                <span asp-validation-for="Staff.ContactNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.Email" class="control-label"></label>
-                <input asp-for="Staff.Email" class="form-control" />
-                <span asp-validation-for="Staff.Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.Address" class="control-label"></label>
-                <input asp-for="Staff.Address" class="form-control" />
-                <span asp-validation-for="Staff.Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.DepartmentId" class="control-label"></label>
-                <select asp-for="Staff.DepartmentId" class ="form-control" asp-items="ViewBag.DepartmentId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.Position" class="control-label"></label>
-                <input asp-for="Staff.Position" class="form-control" />
-                <span asp-validation-for="Staff.Position" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.Specialization" class="control-label"></label>
-                <input asp-for="Staff.Specialization" class="form-control" />
-                <span asp-validation-for="Staff.Specialization" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.Qualification" class="control-label"></label>
-                <input asp-for="Staff.Qualification" class="form-control" />
-                <span asp-validation-for="Staff.Qualification" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.HireDate" class="control-label"></label>
-                <input asp-for="Staff.HireDate" class="form-control" />
-                <span asp-validation-for="Staff.HireDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.Salary" class="control-label"></label>
-                <input asp-for="Staff.Salary" class="form-control" />
-                <span asp-validation-for="Staff.Salary" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.Username" class="control-label"></label>
-                <input asp-for="Staff.Username" class="form-control" />
-                <span asp-validation-for="Staff.Username" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.PasswordHash" class="control-label"></label>
-                <input asp-for="Staff.PasswordHash" class="form-control" />
-                <span asp-validation-for="Staff.PasswordHash" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff.Role" class="control-label"></label>
-                <input asp-for="Staff.Role" class="form-control" />
-                <span asp-validation-for="Staff.Role" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    <!-- Success Message -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Form Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-primary text-white">
+            <h6 class="m-0 font-weight-bold">
+                <i class="fas fa-user-plus me-2"></i>Staff Information
+            </h6>
+        </div>
+        <div class="card-body">
+            <form method="post" id="staffForm">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Personal Information Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-user me-2"></i>Personal Information
+                        </h5>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.FirstName" class="form-label fw-bold">
+                            <i class="fas fa-id-card me-1"></i>First Name *
+                        </label>
+                        <input asp-for="StaffInput.FirstName" class="form-control form-control-lg"
+                               placeholder="Enter first name" required>
+                        <span asp-validation-for="StaffInput.FirstName" class="text-danger small"></span>
+                        <div class="form-text">Enter the staff member's first name</div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.LastName" class="form-label fw-bold">
+                            <i class="fas fa-id-card me-1"></i>Last Name *
+                        </label>
+                        <input asp-for="StaffInput.LastName" class="form-control form-control-lg"
+                               placeholder="Enter last name" required>
+                        <span asp-validation-for="StaffInput.LastName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="StaffInput.Gender" class="form-label fw-bold">
+                            <i class="fas fa-venus-mars me-1"></i>Gender
+                        </label>
+                        <select asp-for="StaffInput.Gender"
+                                asp-items="Model.GenderOptions"
+                                class="form-select form-select-lg">
+                        </select>
+                        <span asp-validation-for="StaffInput.Gender" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="StaffInput.DateOfBirth" class="form-label fw-bold">
+                            <i class="fas fa-birthday-cake me-1"></i>Date of Birth
+                        </label>
+                        <input asp-for="StaffInput.DateOfBirth" type="date"
+                               class="form-control form-control-lg"
+                               max="@DateOnly.FromDateTime(DateTime.Today.AddYears(-18)).ToString("yyyy-MM-dd")">
+                        <span asp-validation-for="StaffInput.DateOfBirth" class="text-danger small"></span>
+                        <div class="form-text">Minimum age: 18 years</div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="StaffInput.ContactNumber" class="form-label fw-bold">
+                            <i class="fas fa-phone me-1"></i>Contact Number *
+                        </label>
+                        <input asp-for="StaffInput.ContactNumber" class="form-control form-control-lg"
+                               placeholder="+1234567890" required>
+                        <span asp-validation-for="StaffInput.ContactNumber" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Contact Information Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-envelope me-2"></i>Contact Information
+                        </h5>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.Email" class="form-label fw-bold">
+                            <i class="fas fa-envelope me-1"></i>Email Address *
+                        </label>
+                        <input asp-for="StaffInput.Email" type="email" class="form-control form-control-lg"
+                               placeholder="staff@example.com" required>
+                        <span asp-validation-for="StaffInput.Email" class="text-danger small"></span>
+                        <div class="form-text">This will be used for official communication</div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.Address" class="form-label fw-bold">
+                            <i class="fas fa-home me-1"></i>Address
+                        </label>
+                        <textarea asp-for="StaffInput.Address" class="form-control form-control-lg"
+                                  rows="2" placeholder="Full address"></textarea>
+                        <span asp-validation-for="StaffInput.Address" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Professional Information Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-briefcase me-2"></i>Professional Information
+                        </h5>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.DepartmentId" class="form-label fw-bold">
+                            <i class="fas fa-building me-1"></i>Department *
+                        </label>
+                        @if (Model.Departments.Any(d => !d.Disabled))
+                        {
+                            <select asp-for="StaffInput.DepartmentId"
+                                    asp-items="Model.Departments"
+                                    class="form-select form-select-lg"
+                                    required>
+                                <option value="">Select Department...</option>
+                            </select>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning p-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No departments available. Please
+                                <a asp-page="/Departments/Create" class="alert-link">create a department</a> first.
+                            </div>
+                            <input type="hidden" asp-for="StaffInput.DepartmentId" value="" />
+                        }
+                        <span asp-validation-for="StaffInput.DepartmentId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.Position" class="form-label fw-bold">
+                            <i class="fas fa-user-tie me-1"></i>Position *
+                        </label>
+                        <input asp-for="StaffInput.Position" class="form-control form-control-lg"
+                               placeholder="e.g., Software Engineer" required>
+                        <span asp-validation-for="StaffInput.Position" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.Specialization" class="form-label fw-bold">
+                            <i class="fas fa-star me-1"></i>Specialization
+                        </label>
+                        <input asp-for="StaffInput.Specialization" class="form-control form-control-lg"
+                               placeholder="Area of expertise">
+                        <span asp-validation-for="StaffInput.Specialization" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.Qualification" class="form-label fw-bold">
+                            <i class="fas fa-graduation-cap me-1"></i>Qualification
+                        </label>
+                        <input asp-for="StaffInput.Qualification" class="form-control form-control-lg"
+                               placeholder="Highest qualification">
+                        <span asp-validation-for="StaffInput.Qualification" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.HireDate" class="form-label fw-bold">
+                            <i class="fas fa-calendar-alt me-1"></i>Hire Date *
+                        </label>
+                        <input asp-for="StaffInput.HireDate" type="date"
+                               class="form-control form-control-lg"
+                               max="@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")"
+                               required>
+                        <span asp-validation-for="StaffInput.HireDate" class="text-danger small"></span>
+                        <div class="form-text">Date when staff member joined</div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.Salary" class="form-label fw-bold">
+                            <i class="fas fa-money-bill-wave me-1"></i>Salary
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text">$</span>
+                            <input asp-for="StaffInput.Salary" type="number" step="0.01" min="0"
+                                   class="form-control" placeholder="0.00">
+                        </div>
+                        <span asp-validation-for="StaffInput.Salary" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Account Information Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-user-shield me-2"></i>Account Information
+                        </h5>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.Username" class="form-label fw-bold">
+                            <i class="fas fa-user-circle me-1"></i>Username *
+                        </label>
+                        <input asp-for="StaffInput.Username" class="form-control form-control-lg"
+                               placeholder="username" required>
+                        <span asp-validation-for="StaffInput.Username" class="text-danger small"></span>
+                        <div class="form-text">For system login</div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.Password" class="form-label fw-bold">
+                            <i class="fas fa-key me-1"></i>Password *
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <input asp-for="StaffInput.Password" type="password"
+                                   class="form-control" placeholder="********" required
+                                   id="passwordField" minlength="8">
+                            <button class="btn btn-outline-secondary" type="button"
+                                    id="togglePassword" title="Show/Hide Password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="StaffInput.Password" class="text-danger small"></span>
+                        <div class="form-text">Minimum 8 characters with letters and numbers</div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StaffInput.Role" class="form-label fw-bold">
+                            <i class="fas fa-user-tag me-1"></i>Role *
+                        </label>
+                        <select asp-for="StaffInput.Role"
+                                asp-items="Model.RoleOptions"
+                                class="form-select form-select-lg"
+                                required>
+                        </select>
+                        <span asp-validation-for="StaffInput.Role" class="text-danger small"></span>
+                        <div class="form-text">System access permissions</div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="row mt-5 pt-4 border-top">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between">
+                            <a asp-page="Index" class="btn btn-lg btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-lg btn-primary px-5">
+                                <i class="fas fa-user-plus me-2"></i>Create Staff Member
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer bg-light">
+            <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                Fields marked with * are required
+            </small>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Password toggle visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordField = document.getElementById('passwordField');
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.innerHTML = type === 'password' ?
+                '<i class="fas fa-eye"></i>' :
+                '<i class="fas fa-eye-slash"></i>';
+        });
+
+        // Auto-generate username from first and last name
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstNameField = document.querySelector('input[name="StaffInput.FirstName"]');
+            const lastNameField = document.querySelector('input[name="StaffInput.LastName"]');
+            const usernameField = document.querySelector('input[name="StaffInput.Username"]');
+
+            function generateUsername() {
+                if (firstNameField && lastNameField && usernameField) {
+                    const firstName = firstNameField.value.trim().toLowerCase();
+                    const lastName = lastNameField.value.trim().toLowerCase();
+
+                    if (firstName && lastName && !usernameField.value) {
+                        // Generate username: first initial + last name
+                        const username = firstName.charAt(0) + lastName;
+                        usernameField.value = username.replace(/\s+/g, '');
+                    }
+                }
+            }
+
+            if (firstNameField) firstNameField.addEventListener('blur', generateUsername);
+            if (lastNameField) lastNameField.addEventListener('blur', generateUsername);
+
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+}

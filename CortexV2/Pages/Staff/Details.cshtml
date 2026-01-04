@@ -2,103 +2,691 @@
 @model Cortex.Pages.Staff.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Staff Details";
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
 }
 
-<h1>Details</h1>
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a asp-page="/Index">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-page="Index">Staff</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.Staff.FirstName @Model.Staff.LastName</li>
+                </ol>
+            </nav>
+            <div class="d-flex align-items-center gap-3">
+                <h1 class="h3 mb-1">Staff Details</h1>
+                <span class="badge @GetStatusBadgeClass(Model.Staff.Status) fs-6">
+                    @Model.Staff.Status
+                </span>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-page="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+            <a asp-page="./Edit" asp-route-id="@Model.Staff.StaffID" class="btn btn-primary">
+                <i class="fas fa-edit me-2"></i>Edit Staff
+            </a>
+            <button type="button" class="btn btn-success" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Print Details
+            </button>
+        </div>
+    </div>
 
-<div>
-    <h4>Staff</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.FirstName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.FirstName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.LastName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.LastName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.Gender)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.Gender)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.DateOfBirth)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.DateOfBirth)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.ContactNumber)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.ContactNumber)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.Email)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.Email)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.Address)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.Address)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.Position)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.Position)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.Specialization)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.Specialization)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.Qualification)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.Qualification)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.HireDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.HireDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.Salary)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.Salary)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.Status)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.Status)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff.Department)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Staff.Department.DepartmentId)
-        </dd>
-    </dl>
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Staff Profile Header -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar avatar-lg rounded-circle @GetRoleAvatarClass(Model.Staff.Position) text-white d-flex align-items-center justify-content-center me-3">
+                                    @if (Model.Staff.Position == "Doctor" || Model.Staff.Position.Contains("Doctor"))
+                                    {
+                                        <i class="fas fa-user-md fa-2x"></i>
+                                    }
+                                    else if (Model.Staff.Position == "Nurse" || Model.Staff.Position.Contains("Nurse"))
+                                    {
+                                        <i class="fas fa-user-nurse fa-2x"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-user-tie fa-2x"></i>
+                                    }
+                                </div>
+                                <div>
+                                    <h3 class="mb-1">@Model.Staff.FirstName @Model.Staff.LastName</h3>
+                                    <p class="text-muted mb-0">
+                                        <i class="fas fa-briefcase me-1"></i>
+                                        @Model.Staff.Position
+                                        @if (!string.IsNullOrEmpty(Model.Staff.Specialization))
+                                        {
+                                            <span class="ms-2">
+                                                <i class="fas fa-stethoscope me-1"></i>
+                                                @Model.Staff.Specialization
+                                            </span>
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="d-inline-block text-end">
+                                <div class="h4 text-primary mb-2">@Model.Staff.Salary?.ToString("C")</div>
+                                <div class="d-flex align-items-center justify-content-end gap-2">
+                                    <span class="text-muted">•</span>
+                                    <span>@Model.DepartmentName</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal Information -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-circle me-2"></i>
+                        Personal Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-5 text-muted">First Name:</dt>
+                                <dd class="col-sm-7 fw-bold">@Model.Staff.FirstName</dd>
+
+                                <dt class="col-sm-5 text-muted">Last Name:</dt>
+                                <dd class="col-sm-7 fw-bold">@Model.Staff.LastName</dd>
+
+                                <dt class="col-sm-5 text-muted">Gender:</dt>
+                                <dd class="col-sm-7">
+                                    <span class="badge @GetGenderBadgeClass(Model.Staff.Gender)">
+                                        @Model.Staff.Gender
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Date of Birth:</dt>
+                                <dd class="col-sm-7">
+                                    @Model.Staff.DateOfBirth?.ToString("MMMM dd, yyyy")
+                                    <small class="text-muted d-block">(@CalculateAge(Model.Staff.DateOfBirth))</small>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-5 text-muted">Contact Number:</dt>
+                                <dd class="col-sm-7">
+                                    @if (!string.IsNullOrEmpty(Model.Staff.ContactNumber))
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-phone text-primary me-2"></i>
+                                            <a href="tel:@Model.Staff.ContactNumber" class="text-decoration-none">
+                                                @Model.Staff.ContactNumber
+                                            </a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Email:</dt>
+                                <dd class="col-sm-7">
+                                    @if (!string.IsNullOrEmpty(Model.Staff.Email))
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-envelope text-primary me-2"></i>
+                                            <a href="mailto:@Model.Staff.Email" class="text-decoration-none">
+                                                @Model.Staff.Email
+                                            </a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Address:</dt>
+                                <dd class="col-sm-7">
+                                    @if (!string.IsNullOrEmpty(Model.Staff.Address))
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                            @Model.Staff.Address
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Information -->
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-briefcase me-2"></i>
+                                Professional Details
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-5 text-muted">Position:</dt>
+                                <dd class="col-sm-7">
+                                    <span class="badge @GetPositionBadgeClass(Model.Staff.Position)">
+                                        @Model.Staff.Position
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Specialization:</dt>
+                                <dd class="col-sm-7">
+                                    @if (!string.IsNullOrEmpty(Model.Staff.Specialization))
+                                    {
+                                        <span class="badge bg-purple">@Model.Staff.Specialization</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Qualification:</dt>
+                                <dd class="col-sm-7">
+                                    @if (!string.IsNullOrEmpty(Model.Staff.Qualification))
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-graduation-cap text-primary me-2"></i>
+                                            @Model.Staff.Qualification
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Hire Date:</dt>
+                                <dd class="col-sm-7">
+                                    @Model.Staff.HireDate.ToString("MMMM dd, yyyy")
+                                    <small class="text-muted d-block">(@CalculateEmploymentDuration(Model.Staff.HireDate))</small>
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Salary:</dt>
+                                <dd class="col-sm-7">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-money-bill-wave text-success me-2"></i>
+                                        @Model.Staff.Salary?.ToString("C")
+                                        <small class="text-muted ms-2">per month</small>
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-building me-2"></i>
+                                Department & Status
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="flex-shrink-0">
+                                    <div class="avatar avatar-md rounded-circle bg-primary text-white d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-hospital"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">@Model.DepartmentName</h6>
+                                    <p class="text-muted mb-0 small">Department ID: @Model.Staff.DepartmentId</p>
+                                </div>
+                            </div>
+
+                            <dl class="row mb-0">
+                                <dt class="col-sm-5 text-muted">Department:</dt>
+                                <dd class="col-sm-7">
+                                        @Model.DepartmentName
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Status:</dt>
+                                <dd class="col-sm-7">
+                                    <span class="badge @GetStatusBadgeClass(Model.Staff.Status)">
+                                        @Model.Staff.Status
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Employment Type:</dt>
+                                <dd class="col-sm-7">
+                                    @if (Model.Staff.HireDate != DateOnly.MinValue)
+                                    {
+                                        var hireDateTime = Model.Staff.HireDate.ToDateTime(TimeOnly.MinValue);
+                                        var years = (DateTime.Now - hireDateTime).TotalDays / 365;
+
+                                        <span class="badge @(years >= 1 ? "bg-success" : "bg-warning")">
+                                            @(years >= 1 ? "Permanent" : "Probation")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-5 text-muted">Years of Service:</dt>
+                                <dd class="col-sm-7">
+                                    @{
+                                        bool hasValidHireDate = Model.Staff.HireDate != default &&
+                                        Model.Staff.HireDate != DateOnly.MinValue &&
+                                        Model.Staff.HireDate.Year > 1900;
+                                    }
+
+                                    @if (hasValidHireDate)
+                                    {
+                                        var today = DateOnly.FromDateTime(DateTime.Now);
+                                        var hireDate = Model.Staff.HireDate;
+
+                                        // More accurate calculation
+                                        var months = ((today.Year - hireDate.Year) * 12) + (today.Month - hireDate.Month);
+                                        if (today.Day < hireDate.Day)
+                                        {
+                                            months--;
+                                        }
+
+                                        var years = months / 12.0; // Convert to decimal for precision
+                                        var percentage = Math.Min(years / 10 * 100, 100);
+
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar @(years >= 5 ? "bg-success" : years >= 2 ? "bg-info" : "bg-warning")"
+                                                 role="progressbar"
+                                                 style="width: @percentage%;"
+                                                 aria-valuenow="@years"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="10">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">@years.ToString("F1") years</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not available</span>
+                                    }
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar - Statistics & Actions -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-page="./Edit" asp-route-id="@Model.Staff.StaffID" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Edit Staff
+                        </a>
+
+                        <a asp-page="/Appointment/Index" class="btn btn-outline-success">
+                            <i class="fas fa-calendar-check me-2"></i>View Appointments
+                        </a>
+
+                        <button type="button" class="btn btn-outline-info" onclick="window.print()">
+                            <i class="fas fa-print me-2"></i>Print Details
+                        </button>
+
+                        <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#changeDepartmentModal">
+                            <i class="fas fa-exchange-alt me-2"></i>Change Department
+                        </button>
+
+                        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#promotionModal">
+                            <i class="fas fa-chart-line me-2"></i>Promotion
+                        </button>
+
+                        @if (Model.Staff.Status == "Active")
+                        {
+                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal">
+                                <i class="fas fa-user-slash me-2"></i>Deactivate Staff
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#activateModal">
+                                <i class="fas fa-user-check me-2"></i>Activate Staff
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff Statistics -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Staff Statistics
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item px-0 border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Monthly Appointments:</span>
+                                <span class="fw-bold">@Model.MonthlyAppointments</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item px-0 border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Total Patients:</span>
+                                <span class="fw-bold text-primary">@Model.TotalPatients</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item px-0 border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Avg. Rating:</span>
+                                <span class="fw-bold text-warning">
+                                    @Model.AverageRating?.ToString("F1")
+                                    <i class="fas fa-star text-warning ms-1"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="list-group-item px-0 border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Leave Balance:</span>
+                                <span class="fw-bold text-success">@Model.LeaveBalance days</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item px-0 border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Attendance %:</span>
+                                <span class="fw-bold @(Model.AttendancePercentage >= 90 ? "text-success" : Model.AttendancePercentage >= 80 ? "text-warning" : "text-danger")">
+                                    @Model.AttendancePercentage%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Quick Links -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-address-card me-2"></i>
+                        Quick Contact
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        @if (!string.IsNullOrEmpty(Model.Staff.ContactNumber))
+                        {
+                            <div class="list-group-item px-0 border-0">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-phone text-primary me-3"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Phone</small>
+                                        <a href="tel:@Model.Staff.ContactNumber" class="text-decoration-none">
+                                            @Model.Staff.ContactNumber
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.Staff.Email))
+                        {
+                            <div class="list-group-item px-0 border-0">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-envelope text-primary me-3"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Email</small>
+                                        <a href="mailto:@Model.Staff.Email" class="text-decoration-none">
+                                            @Model.Staff.Email
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.Staff.Address))
+                        {
+                            <div class="list-group-item px-0 border-0">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-map-marker-alt text-primary me-3"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Address</small>
+                                        @Model.Staff.Address
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="list-group-item px-0 border-0">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clock text-primary me-3"></i>
+                                <div>
+                                    <small class="text-muted d-block">Shift Schedule</small>
+                                    <span>Morning Shift (8 AM - 4 PM)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.Staff.StaffID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
-</div>
+
+<!-- Modals -->
+@* @await Html.PartialAsync("_ChangeDepartmentModal", Model.Staff)
+@await Html.PartialAsync("_PromotionModal", Model.Staff)
+@await Html.PartialAsync("_DeactivateModal", Model.Staff) *@
+
+@functions {
+    private string GetStatusBadgeClass(string status)
+    {
+        if (string.IsNullOrEmpty(status)) return "bg-secondary";
+
+        return status.ToLower() switch
+        {
+            "active" => "bg-success",
+            "inactive" => "bg-secondary",
+            "on leave" => "bg-info",
+            "suspended" => "bg-warning",
+            "terminated" => "bg-danger",
+            "retired" => "bg-purple",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetGenderBadgeClass(string gender)
+    {
+        if (string.IsNullOrEmpty(gender)) return "bg-secondary";
+
+        return gender.ToLower() switch
+        {
+            "male" => "bg-primary",
+            "female" => "bg-pink",
+            "other" => "bg-info",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetPositionBadgeClass(string position)
+    {
+        if (string.IsNullOrEmpty(position)) return "bg-secondary";
+
+        return position.ToLower() switch
+        {
+            var p when p.Contains("doctor") => "bg-success",
+            var p when p.Contains("nurse") => "bg-info",
+            var p when p.Contains("manager") => "bg-warning",
+            var p when p.Contains("admin") => "bg-purple",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetRoleAvatarClass(string position)
+    {
+        if (string.IsNullOrEmpty(position)) return "bg-secondary";
+
+        return position.ToLower() switch
+        {
+            var p when p.Contains("doctor") => "bg-success",
+            var p when p.Contains("nurse") => "bg-info",
+            var p when p.Contains("manager") => "bg-warning",
+            _ => "bg-primary"
+        };
+    }
+
+    private string CalculateAge(DateOnly? dateOfBirth)
+    {
+        if (!dateOfBirth.HasValue)
+            return "N/A";
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var birthDate = dateOfBirth.Value;
+
+        var age = today.Year - birthDate.Year;
+
+        // Adjust if birthday hasn't occurred this year
+        if (birthDate > today.AddYears(-age))
+            age--;
+
+        // Calculate months if less than 1 year old
+        if (age == 0)
+        {
+            var months = today.Month - birthDate.Month;
+            if (months < 0)
+            {
+                months += 12;
+            }
+
+            // Adjust for days within the month
+            if (today.Day < birthDate.Day)
+            {
+                months--;
+                if (months < 0) months = 11;
+            }
+
+            if (months == 0)
+            {
+                var days = today.Day - birthDate.Day;
+                if (days < 0)
+                {
+                    var previousMonth = today.AddMonths(-1);
+                    days = DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month) - birthDate.Day + today.Day;
+                    months = 11; // This happens when crossing month boundaries with < 1 month age
+                }
+                return days == 1 ? "1 day" : $"{days} days";
+            }
+
+            return months == 1 ? "1 month" : $"{months} months";
+        }
+
+        // For ages 1 year or more
+        return age == 1 ? "1 year" : $"{age} years";
+    }
+
+    private string CalculateEmploymentDuration(DateOnly? hireDate)
+    {
+        if (!hireDate.HasValue) return "N/A";
+
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var hireDateValue = hireDate.Value;
+
+        // Calculate years and months properly
+        var months = ((today.Year - hireDateValue.Year) * 12) + (today.Month - hireDateValue.Month);
+
+        // Adjust for days
+        if (today.Day < hireDateValue.Day)
+        {
+            months--;
+        }
+
+        var years = months / 12;
+        months = months % 12;
+
+        if (years > 0 && months > 0)
+            return $"{years} years, {months} months";
+        else if (years > 0)
+            return $"{years} years";
+        else if (months > 0)
+            return $"{months} months";
+        else
+            return "Less than a month";
+    }
+
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+
+        function showAlert(message, type = 'info') {
+            const alertClass = type === 'error' ? 'alert-danger' :
+                               type === 'warning' ? 'alert-warning' :
+                               type === 'success' ? 'alert-success' : 'alert-info';
+
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert-toast');
+            existingAlerts.forEach(alert => alert.remove());
+
+            // Create alert element
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${alertClass} alert-dismissible fade show alert-toast position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+            alertDiv.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
+                    <div>${message}</div>
+                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+
+            // Add to body
+            document.body.appendChild(alertDiv);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+    </script>
+}
