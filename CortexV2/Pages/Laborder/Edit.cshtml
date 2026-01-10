@@ -2,51 +2,782 @@
 @model Cortex.Pages.Laborder.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Lab Order";
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
 }
 
-<h1>Edit</h1>
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 text-gray-800 mb-1">Edit Lab Order</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-page="Index">Lab Orders</a></li>
+                    <li class="breadcrumb-item"><a asp-page="./Details" asp-route-id="@Model.LabOrder.OrderId">Order #@Model.LabOrder.OrderId</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                </ol>
+            </nav>
+        </div>
+        <a asp-page="./Details" asp-route-id="@Model.LabOrder.OrderId" class="btn btn-outline-secondary">
+            <i class="fas fa-eye me-2"></i>View Details
+        </a>
+    </div>
 
-<h4>LabOrder</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="LabOrder.OrderId" />
-            <div class="form-group">
-                <label asp-for="LabOrder.PatientId" class="control-label"></label>
-                <select asp-for="LabOrder.PatientId" class="form-control" asp-items="ViewBag.PatientId"></select>
-                <span asp-validation-for="LabOrder.PatientId" class="text-danger"></span>
+    <div class="row">
+        <div class="col-xl-10 col-lg-12 mx-auto">
+            <!-- Main Form Card -->
+            <div class="card shadow border-0">
+                <div class="card-header bg-warning text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-edit me-2"></i>Editing Lab Order #@Model.LabOrder.OrderId
+                        </h5>
+                        <span class="badge bg-light text-dark fs-6">
+                            <i class="fas fa-hashtag me-1"></i>@Model.LabOrder.OrderId.ToString("D6")
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Current Status & Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card border">
+                                <div class="card-body p-3">
+                                    <small class="text-muted d-block">Current Status</small>
+                                    <span class="badge @GetStatusBadgeClass(Model.LabOrder.Status) fs-6">
+                                        @(Model.LabOrder.Status ?? "Pending")
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border">
+                                <div class="card-body p-3">
+                                    <small class="text-muted d-block">Order Date</small>
+                                    <p class="mb-0 fw-semibold">@Model.LabOrder.OrderDate?.ToString("MMM dd, yyyy")</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border">
+                                <div class="card-body p-3">
+                                    <small class="text-muted d-block">Last Updated</small>
+                                    <p class="mb-0 fw-semibold">@DateTime.Now.ToString("MMM dd, yyyy hh:mm tt")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none">
+                        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <h6 class="alert-heading mb-2">Please fix the following errors:</h6>
+                    </div>
+
+                    <form method="post" class="needs-validation" novalidate>
+                        <input type="hidden" asp-for="LabOrder.OrderId" />
+
+                        <div class="row g-3">
+                            <!-- Patient & Doctor Selection -->
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3 border-bottom pb-2">
+                                    <i class="fas fa-users me-2"></i>Patient & Doctor Information
+                                </h6>
+                            </div>
+
+                            <!-- Patient Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="LabOrder.PatientId" class="form-label fw-semibold">
+                                    <i class="fas fa-user-injured text-primary me-1"></i>Patient *
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <select asp-for="LabOrder.PatientId" class="form-select select2-patient"
+                                            data-live-search="true" data-placeholder="Search patient...">
+                                        @if (ViewBag.PatientId != null)
+                                        {
+                                            foreach (var item in (SelectList)ViewBag.PatientId)
+                                            {
+                                                var isSelected = item.Value == Model.LabOrder.PatientId.ToString();
+                                                <option value="@item.Value" selected="@isSelected"
+                                                        data-patient-info="@item.Text">
+                                                    @item.Text
+                                                </option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <span asp-validation-for="LabOrder.PatientId" class="text-danger small"></span>
+                                <div class="form-text">Search and select the patient for this order</div>
+
+                                <!-- Selected Patient Preview -->
+                                <div class="card border mt-2" id="patientPreview">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <i class="fas fa-user-circle fa-2x text-info"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1">Patient Information</h6>
+                                                <p class="text-muted small mb-0" id="patientInfoPreview">
+                                                    Select a patient to see details
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Doctor Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="LabOrder.DoctorId" class="form-label fw-semibold">
+                                    <i class="fas fa-user-md text-primary me-1"></i>Ordering Doctor *
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-stethoscope"></i>
+                                    </span>
+                                    <select asp-for="LabOrder.DoctorId" class="form-select select2-doctor"
+                                            data-live-search="true" data-placeholder="Search doctor...">
+                                        @if (ViewBag.DoctorId != null)
+                                        {
+                                            foreach (var item in (SelectList)ViewBag.DoctorId)
+                                            {
+                                                var isSelected = item.Value == Model.LabOrder.DoctorId.ToString();
+                                                <option value="@item.Value" selected="@isSelected"
+                                                        data-doctor-info="@item.Text">
+                                                    @item.Text
+                                                </option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <span asp-validation-for="LabOrder.DoctorId" class="text-danger small"></span>
+                                <div class="form-text">Search and select the ordering physician</div>
+
+                                <!-- Selected Doctor Preview -->
+                                <div class="card border mt-2" id="doctorPreview">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <i class="fas fa-user-md fa-2x text-success"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1">Doctor Information</h6>
+                                                <p class="text-muted small mb-0" id="doctorInfoPreview">
+                                                    Select a doctor to see details
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Details -->
+                            <div class="col-12 mt-4">
+                                <h6 class="text-primary mb-3 border-bottom pb-2">
+                                    <i class="fas fa-clipboard-list me-2"></i>Order Details
+                                </h6>
+                            </div>
+
+                            <!-- Order Date -->
+                            <div class="col-md-6">
+                                <label asp-for="LabOrder.OrderDate" class="form-label fw-semibold">
+                                    <i class="fas fa-calendar-alt text-primary me-1"></i>Order Date
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-calendar"></i>
+                                    </span>
+                                    <input asp-for="LabOrder.OrderDate" type="datetime-local"
+                                           class="form-control" />
+                                </div>
+                                <span asp-validation-for="LabOrder.OrderDate" class="text-danger small"></span>
+                                <div class="form-text">Date and time when the order was placed</div>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label asp-for="LabOrder.Status" class="form-label fw-semibold">
+                                    <i class="fas fa-circle text-primary me-1"></i>Status
+                                </label>
+                                <select asp-for="LabOrder.Status" class="form-select">
+                                    <option value="">Select Status</option>
+                                    <option value="Pending" selected="@(Model.LabOrder.Status == "Pending")">⏳ Pending</option>
+                                    <option value="Sample Collected" selected="@(Model.LabOrder.Status == "Sample Collected")">🧪 Sample Collected</option>
+                                    <option value="In Progress" selected="@(Model.LabOrder.Status == "In Progress")">🔬 In Progress</option>
+                                    <option value="Completed" selected="@(Model.LabOrder.Status == "Completed")">✅ Completed</option>
+                                    <option value="On Hold" selected="@(Model.LabOrder.Status == "On Hold")">⏸️ On Hold</option>
+                                    <option value="Cancelled" selected="@(Model.LabOrder.Status == "Cancelled")">❌ Cancelled</option>
+                                </select>
+                                <span asp-validation-for="LabOrder.Status" class="text-danger small"></span>
+                                <div class="form-text">Current status of the lab order</div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-12">
+                                <label asp-for="LabOrder.Notes" class="form-label fw-semibold">
+                                    <i class="fas fa-sticky-note text-primary me-1"></i>Order Notes
+                                </label>
+                                <textarea asp-for="LabOrder.Notes" class="form-control" rows="4"
+                                          placeholder="Enter any notes or instructions for this lab order..."></textarea>
+                                <span asp-validation-for="LabOrder.Notes" class="text-danger small"></span>
+                                <div class="form-text">Additional information or instructions</div>
+                            </div>
+
+                            <!-- Lab Order Details Management -->
+                            <div class="col-12 mt-4">
+                                <div class="card border">
+                                    <div class="card-header bg-light py-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-vial me-2 text-primary"></i>Ordered Tests
+                                            </h6>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addTestModal">
+                                                <i class="fas fa-plus me-1"></i>Add Test
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover" id="testsTable">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Test</th>
+                                                        <th>Status</th>
+                                                        <th>Result</th>
+                                                        <th>Performed By</th>
+                                                        <th>Date</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if (Model.LabOrder.LabOrderDetails != null && Model.LabOrder.LabOrderDetails.Any())
+                                                    {
+                                                        foreach (var detail in Model.LabOrder.LabOrderDetails)
+                                                        {
+                                                            <tr>
+                                                                <td>@detail.Test?.TestName</td>
+                                                                <td>
+                                                                    <span class="badge @GetTestStatusBadgeClass(detail.Status)">
+                                                                        @detail.Status
+                                                                    </span>
+                                                                </td>
+                                                                <td>@detail.Result</td>
+                                                                <td>@detail.PerformedByNavigation?.FirstName</td>
+                                                                <td>@detail.LastUpdated.ToString("MMM dd, yyyy")</td>
+                                                                <td>
+                                                                    <button type="button" class="btn btn-sm btn-outline-warning"
+                                                                            onclick="editTest(@detail.OrderDetailId)">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-sm btn-outline-danger ms-1"
+                                                                            onclick="removeTest(@detail.OrderDetailId)">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td colspan="6" class="text-center text-muted py-4">
+                                                                <i class="fas fa-vial fa-2x mb-2"></i>
+                                                                <p class="mb-0">No tests added to this order</p>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="col-12 mt-5 pt-3 border-top">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <a asp-page="./Details" asp-route-id="@Model.LabOrder.OrderId"
+                                           class="btn btn-outline-secondary">
+                                            <i class="fas fa-times me-2"></i>Cancel
+                                        </a>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#resetModal">
+                                            <i class="fas fa-redo me-2"></i>Reset Changes
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="LabOrder.DoctorId" class="control-label"></label>
-                <select asp-for="LabOrder.DoctorId" class="form-control" asp-items="ViewBag.DoctorId"></select>
-                <span asp-validation-for="LabOrder.DoctorId" class="text-danger"></span>
+
+            <!-- Quick Actions Card -->
+            <div class="card shadow border-0 mt-4">
+                <div class="card-header bg-light py-3">
+                    <h6 class="mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <a asp-page="./Details" asp-route-id="@Model.LabOrder.OrderId"
+                               class="btn btn-outline-primary w-100">
+                                <i class="fas fa-eye me-2"></i>View Order
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-outline-success w-100" data-bs-toggle="modal" data-bs-target="#statusModal">
+                                <i class="fas fa-sync-alt me-2"></i>Update Status
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-outline-info w-100" onclick="printOrder()">
+                                <i class="fas fa-print me-2"></i>Print Order
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-outline-dark w-100" data-bs-toggle="modal" data-bs-target="#historyModal">
+                                <i class="fas fa-history me-2"></i>View History
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="LabOrder.OrderDate" class="control-label"></label>
-                <input asp-for="LabOrder.OrderDate" class="form-control" />
-                <span asp-validation-for="LabOrder.OrderDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LabOrder.Status" class="control-label"></label>
-                <input asp-for="LabOrder.Status" class="form-control" />
-                <span asp-validation-for="LabOrder.Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LabOrder.Notes" class="control-label"></label>
-                <input asp-for="LabOrder.Notes" class="form-control" />
-                <span asp-validation-for="LabOrder.Notes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-page="./Index">Back to List</a>
+<!-- Add Test Modal -->
+<div class="modal fade" id="addTestModal" tabindex="-1" aria-labelledby="addTestModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTestModalLabel">
+                    <i class="fas fa-plus-circle me-2"></i>Add Lab Test
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addTestForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="testSelect" class="form-label">Test</label>
+                            <select class="form-select" id="testSelect">
+                                <option value="">Select Test</option>
+                                <option value="1">Complete Blood Count (CBC)</option>
+                                <option value="2">Lipid Panel</option>
+                                <option value="3">Liver Function Test</option>
+                                <option value="4">Kidney Function Test</option>
+                                <option value="5">Thyroid Stimulating Hormone (TSH)</option>
+                                <option value="6">Hemoglobin A1c</option>
+                                <option value="7">Urinalysis</option>
+                                <option value="8">Culture and Sensitivity</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="testPriority" class="form-label">Priority</label>
+                            <select class="form-select" id="testPriority">
+                                <option value="Normal">Normal</option>
+                                <option value="High">High</option>
+                                <option value="Urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="testInstructions" class="form-label">Special Instructions</label>
+                            <textarea class="form-control" id="testInstructions" rows="3"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="saveTest">
+                    <i class="fas fa-plus me-2"></i>Add Test
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Update Status Modal -->
+<div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statusModalLabel">
+                    <i class="fas fa-sync-alt me-2"></i>Update Order Status
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="statusUpdateForm">
+                    <div class="mb-3">
+                        <label for="newStatus" class="form-label">New Status</label>
+                        <select class="form-select" id="newStatus">
+                            <option value="Pending">⏳ Pending</option>
+                            <option value="Sample Collected">🧪 Sample Collected</option>
+                            <option value="In Progress">🔬 In Progress</option>
+                            <option value="Completed">✅ Completed</option>
+                            <option value="On Hold">⏸️ On Hold</option>
+                            <option value="Cancelled">❌ Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="statusNotes" class="form-label">Status Notes</label>
+                        <textarea class="form-control" id="statusNotes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="saveStatus">
+                    <i class="fas fa-save me-2"></i>Update Status
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Changes Modal -->
+<div class="modal fade" id="resetModal" tabindex="-1" aria-labelledby="resetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resetModalLabel">
+                    <i class="fas fa-redo text-warning me-2"></i>Reset Changes
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reset all changes to this lab order?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Any unsaved changes will be lost.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" id="confirmReset">
+                    <i class="fas fa-redo me-2"></i>Reset Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order History Modal -->
+<div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="historyModalLabel">
+                    <i class="fas fa-history me-2"></i>Order History
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="timeline">
+                    <div class="timeline-item completed">
+                        <div class="timeline-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6>Order Created</h6>
+                            <p class="text-muted small mb-0">@Model.LabOrder.OrderDate?.ToString("MMM dd, yyyy hh:mm tt")</p>
+                        </div>
+                    </div>
+                    <!-- More timeline items would be added dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusBadgeClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "bg-success",
+            "in progress" => "bg-primary",
+            "sample collected" => "bg-info",
+            "cancelled" => "bg-danger",
+            "on hold" => "bg-warning",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetTestStatusBadgeClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "bg-success",
+            "in progress" => "bg-primary",
+            "pending" => "bg-warning",
+            "cancelled" => "bg-danger",
+            "collected" => "bg-info",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Select2 for patient and doctor dropdowns
+            $('.select2-patient').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Search patient...',
+                allowClear: true
+            });
+
+            $('.select2-doctor').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Search doctor...',
+                allowClear: true
+            });
+
+                    // Update preview when patient selection changes
+        $('.select2-patient').on('change', function() {
+            const selectedOption = $(this).find('option:selected');
+            const patientName = selectedOption.data('patient-name') || 'No patient selected';
+            const patientId = selectedOption.data('patient-id') || '';
+            const patientAge = selectedOption.data('patient-age') || '';
+            const patientGender = selectedOption.data('patient-gender') || '';
+            const patientPhone = selectedOption.data('patient-phone') || '';
+
+            $('#patientNamePreview').text(patientName);
+
+            let patientInfo = '';
+            if (patientId) {
+                patientInfo += `ID: ${patientId.toString().padStart(6, '0')} | `;
+            }
+            if (patientAge) {
+                patientInfo += `${patientAge} years | `;
+            }
+            if (patientGender) {
+                patientInfo += patientGender;
+            }
+            if (patientPhone) {
+                patientInfo += `<br />📞 ${patientPhone}`;
+            }
+
+            $('#patientInfoPreview').html(patientInfo || 'No information available');
+
+            if (selectedOption.val()) {
+                $('#patientPreview').addClass('border-primary');
+            } else {
+                $('#patientPreview').removeClass('border-primary');
+            }
+        });
+
+        // Update preview when doctor selection changes
+        $('.select2-doctor').on('change', function() {
+            const selectedOption = $(this).find('option:selected');
+            const doctorName = selectedOption.data('doctor-name') || 'No doctor selected';
+            const doctorSpecialization = selectedOption.data('doctor-specialization') || '';
+            const doctorDepartment = selectedOption.data('doctor-department') || '';
+            const doctorPhone = selectedOption.data('doctor-phone') || '';
+
+            $('#doctorNamePreview').text(doctorName);
+
+            let doctorInfo = '';
+            if (doctorSpecialization) {
+                doctorInfo += `${doctorSpecialization} | `;
+            }
+            if (doctorDepartment) {
+                doctorInfo += doctorDepartment;
+            }
+            if (doctorPhone) {
+                doctorInfo += `<br />📞 ${doctorPhone}`;
+            }
+
+            $('#doctorInfoPreview').html(doctorInfo || 'No information available');
+
+            if (selectedOption.val()) {
+                $('#doctorPreview').addClass('border-primary');
+            } else {
+                $('#doctorPreview').removeClass('border-primary');
+            }
+        });
+
+            // Initialize form validation
+            (function () {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
+
+            // Show validation errors if any
+            const validationErrors = document.querySelector('[asp-validation-summary="ModelOnly"]');
+            if (validationErrors && validationErrors.innerHTML.trim() !== '') {
+                validationErrors.classList.remove('d-none');
+            }
+
+            // Reset form functionality
+            const originalValues = {
+                PatientId: '@Model.LabOrder.PatientId',
+                DoctorId: '@Model.LabOrder.DoctorId',
+                OrderDate: '@Model.LabOrder.OrderDate?.ToString("yyyy-MM-ddTHH:mm")',
+                Status: '@Model.LabOrder.Status',
+                Notes: '@Html.Raw(Model.LabOrder.Notes?.Replace("'", "\\'") ?? "")'
+            };
+
+            document.getElementById('confirmReset')?.addEventListener('click', function() {
+                // Reset form values
+                $('.select2-patient').val(originalValues.PatientId).trigger('change');
+                $('.select2-doctor').val(originalValues.DoctorId).trigger('change');
+                document.querySelector('[name="LabOrder.OrderDate"]').value = originalValues.OrderDate;
+                document.querySelector('[name="LabOrder.Status"]').value = originalValues.Status;
+                document.querySelector('[name="LabOrder.Notes"]').value = originalValues.Notes;
+
+                // Reset validation state
+                document.querySelector('.needs-validation').classList.remove('was-validated');
+
+                // Close modal
+                const resetModal = bootstrap.Modal.getInstance(document.getElementById('resetModal'));
+                resetModal.hide();
+
+                showToast('Changes reset successfully', 'success');
+            });
+
+            // Add test functionality
+            document.getElementById('saveTest')?.addEventListener('click', function() {
+                const testSelect = document.getElementById('testSelect');
+                const testPriority = document.getElementById('testPriority');
+                const testInstructions = document.getElementById('testInstructions');
+
+                if (!testSelect.value) {
+                    showToast('Please select a test', 'error');
+                    return;
+                }
+
+                // In a real application, you would make an API call here
+                // For now, we'll just show a success message
+                showToast('Test added successfully', 'success');
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addTestModal'));
+                modal.hide();
+
+                // Clear form
+                testSelect.value = '';
+                testPriority.value = 'Normal';
+                testInstructions.value = '';
+            });
+
+            // Update status functionality
+            document.getElementById('saveStatus')?.addEventListener('click', function() {
+                const newStatus = document.getElementById('newStatus').value;
+                const statusNotes = document.getElementById('statusNotes').value;
+
+                // Update the form's status field
+                document.querySelector('[name="LabOrder.Status"]').value = newStatus;
+
+                showToast(`Order status updated to "${newStatus}"`, 'success');
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('statusModal'));
+                modal.hide();
+
+                // Clear form
+                document.getElementById('statusNotes').value = '';
+            });
+
+            // Test management functions
+            window.editTest = function(testId) {
+                showToast(`Editing test ${testId}`, 'info');
+                // In a real application, open an edit modal
+            };
+
+            window.removeTest = function(testId) {
+                if (confirm('Are you sure you want to remove this test from the order?')) {
+                    showToast(`Test ${testId} removed`, 'success');
+                    // In a real application, make an API call to remove the test
+                }
+            };
+
+            window.printOrder = function() {
+                window.print();
+            };
+
+            // Initialize patient and doctor previews
+            const initialPatient = $('.select2-patient').find('option:selected');
+            if (initialPatient.length && initialPatient.val()) {
+                $('#patientInfoPreview').text(initialPatient.data('patient-info') || 'No information available');
+                $('#patientPreview').addClass('border-primary');
+            }
+
+            const initialDoctor = $('.select2-doctor').find('option:selected');
+            if (initialDoctor.length && initialDoctor.val()) {
+                $('#doctorInfoPreview').text(initialDoctor.data('doctor-info') || 'No information available');
+                $('#doctorPreview').addClass('border-primary');
+            }
+
+            // Show toast function
+            function showToast(message, type = 'info') {
+                const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+                const toastId = 'toast-' + Date.now();
+
+                const toastHtml = `
+                    <div id="${toastId}" class="toast align-items-center border-0 ${type === 'success' ? 'bg-success text-white' : type === 'error' ? 'bg-danger text-white' : 'bg-info text-white'}" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} me-2"></i>
+                                ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+
+                toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+                const toastElement = document.getElementById(toastId);
+                const toast = new bootstrap.Toast(toastElement);
+                toast.show();
+
+                toastElement.addEventListener('hidden.bs.toast', function () {
+                    toastElement.remove();
+                });
+            }
+
+            function createToastContainer() {
+                const container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(container);
+                return container;
+            }
+        });
+    </script>
+}

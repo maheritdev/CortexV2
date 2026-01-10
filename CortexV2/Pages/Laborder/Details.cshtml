@@ -2,49 +2,910 @@
 @model Cortex.Pages.Laborder.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Lab Order Details";
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
 }
 
-<h1>Details</h1>
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 text-gray-800 mb-1">Lab Order Details</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-page="Index">Lab Orders</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Order #@Model.LabOrder.OrderId</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-page="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
 
-<div>
-    <h4>LabOrder</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.LabOrder.OrderDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LabOrder.OrderDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.LabOrder.Status)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LabOrder.Status)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.LabOrder.Notes)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LabOrder.Notes)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.LabOrder.Doctor)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LabOrder.Doctor.StaffID)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.LabOrder.Patient)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LabOrder.Patient.PatientId)
-        </dd>
-    </dl>
+    <div class="row">
+        <div class="col-xl-10 col-lg-12 mx-auto">
+            <!-- Order Header Card -->
+            <div class="card shadow border-0 mb-4">
+                <div class="card-header @GetStatusColorClass(Model.LabOrder.Status)">
+                    <div class="d-flex justify-content-between align-items-center text-white">
+                        <div>
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-flask me-2"></i>Lab Order #@Model.LabOrder.OrderId
+                            </h5>
+                            <small class="opacity-75">Order Date: @Model.LabOrder.OrderDate?.ToString("MMMM dd, yyyy")</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-light text-dark fs-6">
+                                <i class="fas fa-hashtag me-1"></i>@Model.LabOrder.OrderId.ToString("D6")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Status & Timeline -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <i class="fas fa-clipboard-check fa-2x text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Order Status</h6>
+                                    <span class="badge @GetStatusBadgeClass(Model.LabOrder.Status) fs-6">
+                                        @(Model.LabOrder.Status ?? "Pending")
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <i class="fas fa-calendar-alt fa-2x text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Order Date & Time</h6>
+                                    <p class="mb-0 fw-semibold">
+                                        @Model.LabOrder.OrderDate?.ToString("dddd, MMMM dd, yyyy")<br>
+                                        <small class="text-muted">@Model.LabOrder.OrderDate?.ToString("hh:mm tt")</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Timeline -->
+                    <div class="mb-5">
+                        <h6 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="fas fa-stream me-2"></i>Order Timeline
+                        </h6>
+                        <div class="timeline">
+                            <div class="timeline-item @(Model.LabOrder.OrderDate.HasValue ? "completed" : "")">
+                                <div class="timeline-icon">
+                                    <i class="fas fa-file-medical"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h6>Order Created</h6>
+                                    <p class="text-muted small mb-0">
+                                        @Model.LabOrder.OrderDate?.ToString("MMM dd, yyyy hh:mm tt")<br>
+                                        by Dr. @Model.LabOrder.Doctor?.FirstName @Model.LabOrder.Doctor?.LastName
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="timeline-item @(Model.LabOrder.Status == "In Progress" || Model.LabOrder.Status == "Completed" ? "completed" : "")">
+                                <div class="timeline-icon">
+                                    <i class="fas fa-vial"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h6>Sample Collection</h6>
+                                    <p class="text-muted small mb-0">Waiting for sample collection</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item @(Model.LabOrder.Status == "In Progress" || Model.LabOrder.Status == "Completed" ? "completed" : "")">
+                                <div class="timeline-icon">
+                                    <i class="fas fa-microscope"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h6>Analysis</h6>
+                                    <p class="text-muted small mb-0">Test analysis in progress</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item @(Model.LabOrder.Status == "Completed" ? "completed" : "")">
+                                <div class="timeline-icon">
+                                    <i class="fas fa-clipboard-check"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h6>Results Ready</h6>
+                                    <p class="text-muted small mb-0">Awaiting completion</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Patient & Doctor Information -->
+                    <div class="row">
+                        <!-- Patient Information -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card border h-100">
+                                <div class="card-header bg-light py-3">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-user-injured me-2 text-primary"></i>Patient Information
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <div class="me-3">
+                                            <div class="avatar avatar-lg bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center">
+                                                <i class="fas fa-user fa-lg"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">
+                                                @Model.LabOrder.Patient?.FirstName @Model.LabOrder.Patient?.LastName
+                                            </h5>
+                                            <p class="text-muted mb-1">
+                                                <i class="fas fa-id-card me-1"></i>ID: @Model.LabOrder.PatientId.ToString("D6")
+                                            </p>
+                                            <p class="text-muted mb-0">
+                                                <i class="fas fa-venus-mars me-1"></i>
+                                                @Model.LabOrder.Patient?.Gender
+                                                @if (Model.LabOrder.Patient?.DateOfBirth.HasValue == true)
+                                                {
+                                                    <span class="ms-2">
+                                                        <i class="fas fa-birthday-cake me-1"></i>
+                                                        @CalculateAge(Model.LabOrder.Patient.DateOfBirth.Value) years
+                                                    </span>
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="border-top pt-3">
+                                                <dl class="row mb-0 small">
+                                                    @if (!string.IsNullOrEmpty(Model.LabOrder.Patient?.ContactNumber))
+                                                    {
+                                                        <dt class="col-sm-4 text-muted">Phone</dt>
+                                                        <dd class="col-sm-8">
+                                                            <i class="fas fa-phone me-1"></i>@Model.LabOrder.Patient.ContactNumber
+                                                        </dd>
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(Model.LabOrder.Patient?.Email))
+                                                    {
+                                                        <dt class="col-sm-4 text-muted">Email</dt>
+                                                        <dd class="col-sm-8">
+                                                            <i class="fas fa-envelope me-1"></i>@Model.LabOrder.Patient.Email
+                                                        </dd>
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(Model.LabOrder.Patient?.Address))
+                                                    {
+                                                        <dt class="col-sm-4 text-muted">Address</dt>
+                                                        <dd class="col-sm-8">
+                                                            <i class="fas fa-home me-1"></i>@Model.LabOrder.Patient.Address
+                                                        </dd>
+                                                    }
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Doctor Information -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card border h-100">
+                                <div class="card-header bg-light py-3">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-user-md me-2 text-primary"></i>Ordering Physician
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <div class="me-3">
+                                            <div class="avatar avatar-lg bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center">
+                                                <i class="fas fa-stethoscope fa-lg"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">
+                                                Dr. @Model.LabOrder.Doctor?.FirstName @Model.LabOrder.Doctor?.LastName
+                                            </h5>
+                                            <p class="text-muted mb-1">
+                                                <i class="fas fa-id-badge me-1"></i>Staff ID: @Model.LabOrder.DoctorId.ToString("D4")
+                                            </p>
+                                            @if (!string.IsNullOrEmpty(Model.LabOrder.Doctor?.Specialization))
+                                            {
+                                                <p class="text-muted mb-0">
+                                                    <i class="fas fa-star-of-life me-1"></i>@Model.LabOrder.Doctor.Specialization
+                                                </p>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="border-top pt-3">
+                                                <dl class="row mb-0 small">
+                                                    @if (!string.IsNullOrEmpty(Model.LabOrder.Doctor?.ContactNumber))
+                                                    {
+                                                        <dt class="col-sm-4 text-muted">Phone</dt>
+                                                        <dd class="col-sm-8">
+                                                            <i class="fas fa-phone me-1"></i>@Model.LabOrder.Doctor.ContactNumber
+                                                        </dd>
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(Model.LabOrder.Doctor?.Email))
+                                                    {
+                                                        <dt class="col-sm-4 text-muted">Email</dt>
+                                                        <dd class="col-sm-8">
+                                                            <i class="fas fa-envelope me-1"></i>@Model.LabOrder.Doctor.Email
+                                                        </dd>
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(Model.LabOrder.Doctor?.Department?.Description))
+                                                    {
+                                                        <dt class="col-sm-4 text-muted">Department</dt>
+                                                        <dd class="col-sm-8">
+                                                            <i class="fas fa-building me-1"></i>@Model.LabOrder.Doctor.Department
+                                                        </dd>
+                                                    }
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lab Order Details Section -->
+                    @if (Model.LabOrder.LabOrderDetails != null && Model.LabOrder.LabOrderDetails.Any())
+                    {
+                        <div class="mb-4">
+                            <h6 class="text-primary mb-3 border-bottom pb-2">
+                                <i class="fas fa-list-check me-2"></i>Ordered Tests (@Model.LabOrder.LabOrderDetails.Count())
+                            </h6>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Test Name</th>
+                                            <th>Test Code</th>
+                                            <th>Category</th>
+                                            <th>Status</th>
+                                            <th>Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var detail in Model.LabOrder.LabOrderDetails)
+                                        {
+                                            <tr>
+                                                <td class="fw-semibold">@detail.Test</td>
+                                                <td>
+                                                    <span class="badge bg-secondary">@detail.TestId</span>
+                                                </td>
+                                                <td>@detail.Test</td>
+                                                <td>
+                                                    <span class="badge @GetTestStatusBadgeClass(detail.Status)">
+                                                        @detail.Status
+                                                    </span>
+                                                </td>
+                                                <td class="small">@detail.Notes</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>No test details have been added to this order.
+                        </div>
+                    }
+
+                    <!-- Notes Section -->
+                    @if (!string.IsNullOrEmpty(Model.LabOrder.Notes))
+                    {
+                        <div class="card border mb-4">
+                            <div class="card-header bg-light py-3">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-sticky-note me-2 text-primary"></i>Order Notes
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-0">@Model.LabOrder.Notes</p>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between align-items-center border-top pt-4">
+                        <div>
+                            <a asp-page="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-list me-2"></i>All Lab Orders
+                            </a>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#printModal">
+                                <i class="fas fa-print me-2"></i>Print Order
+                            </button>
+                            <a asp-page="./Edit" asp-route-id="@Model.LabOrder.OrderId" class="btn btn-warning">
+                                <i class="fas fa-edit me-2"></i>Edit Order
+                            </a>
+                            <button type="button" class="btn btn-success" id="updateStatusBtn">
+                                <i class="fas fa-sync-alt me-2"></i>Update Status
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Cards -->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-clock fa-3x text-info"></i>
+                            </div>
+                            <h4 class="card-title">Order Age</h4>
+                            <h2 class="display-6 fw-bold">
+                                @GetOrderAge(Model.LabOrder.OrderDate)
+                            </h2>
+                            <p class="text-muted">@Model.LabOrder.OrderDate?.ToString("MMM dd, yyyy")</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-vial fa-3x text-primary"></i>
+                            </div>
+                            <h4 class="card-title">Tests Ordered</h4>
+                            <h2 class="display-6 fw-bold">
+                                @(Model.LabOrder.LabOrderDetails?.Count ?? 0)
+                            </h2>
+                            <p class="text-muted">Total tests in order</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-user-md fa-3x text-success"></i>
+                            </div>
+                            <h4 class="card-title">Ordered By</h4>
+                            <h5 class="fw-bold mb-1">
+                                Dr. @Model.LabOrder.Doctor?.LastName
+                            </h5>
+                            <p class="text-muted mb-0">@Model.LabOrder.Doctor?.Specialization</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.LabOrder.OrderId">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+
+<!-- Print Modal -->
+<div class="modal fade" id="printModal" tabindex="-1" aria-labelledby="printModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="printModalLabel">
+                    <i class="fas fa-print me-2"></i>Print Lab Order
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Print Options</label>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="printPatientInfo" checked>
+                        <label class="form-check-label" for="printPatientInfo">
+                            Include Patient Information
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="printDoctorInfo" checked>
+                        <label class="form-check-label" for="printDoctorInfo">
+                            Include Doctor Information
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="printTestDetails" checked>
+                        <label class="form-check-label" for="printTestDetails">
+                            Include Test Details
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="printNotes" checked>
+                        <label class="form-check-label" for="printNotes">
+                            Include Order Notes
+                        </label>
+                    </div>
+                </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    The order will be printed in a format suitable for lab processing.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="window.print()">
+                    <i class="fas fa-print me-2"></i>Print Now
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Status Update Modal -->
+<div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statusModalLabel">
+                    <i class="fas fa-sync-alt me-2"></i>Update Order Status
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="statusUpdateForm">
+                    <div class="mb-3">
+                        <label for="newStatus" class="form-label">New Status</label>
+                        <select class="form-select" id="newStatus" aria-label="Select new order status">
+                            <!-- Current Status (Grouped) -->
+                            <optgroup label="Current Status">
+                                <option value="@Model.LabOrder.Status" selected disabled style="font-weight: bold;">
+                                    ⚫ @(Model.LabOrder.Status ?? "No Status")
+                                </option>
+                            </optgroup>
+
+                            <!-- Regular Status Flow -->
+                            <optgroup label="Next Steps">
+                                @{
+                                    var statusFlow = new Dictionary<string, string>
+                                                                {
+                                                                { "Pending", "⏳ Pending - Order created, awaiting action" },
+                                                                { "Sample Collected", "🧪 Sample Collected - Ready for testing" },
+                                                                { "In Progress", "🔬 In Progress - Tests being analyzed" },
+                                                                { "Completed", "✅ Completed - Results ready" }
+                                                                };
+
+                                    // Only show statuses that come after current status in workflow
+                                    var currentIndex = Array.IndexOf(statusFlow.Keys.ToArray(), Model.LabOrder.Status);
+                                    var nextStatuses = statusFlow.Skip(currentIndex + 1).ToList();
+
+                                    foreach (var status in nextStatuses)
+                                    {
+                                        <option value="@status.Key">@status.Value</option>
+                                    }
+                                }
+                            </optgroup>
+
+                            <!-- Special Status Changes -->
+                            <optgroup label="Special Actions">
+                                @{
+                                    var specialStatuses = new Dictionary<string, string>
+                                                                {
+                                                                { "Sample Collected", "🧪 Sample Collected" },
+                                                                { "In Progress", "🔬 In Progress" },
+                                                                { "On Hold", "⏸️ On Hold - Temporarily paused" },
+                                                                { "Cancelled", "❌ Cancelled - Order cancelled" }
+                                                                };
+
+                                    // Remove current status from special actions
+                                    var availableSpecial = specialStatuses
+                                    .Where(s => s.Key != Model.LabOrder.Status)
+                                    .ToList();
+
+                                    foreach (var status in availableSpecial)
+                                    {
+                                        <option value="@status.Key">@status.Value</option>
+                                    }
+                                }
+                            </optgroup>
+
+                            <!-- Quick Rollback (Previous Statuses) -->
+                            @{
+                                var previousStatuses = new Dictionary<string, string>
+                                                        {
+                                                        { "Pending", "↩️ Back to Pending" },
+                                                        { "Sample Collected", "↩️ Back to Sample Collected" }
+                                                        };
+
+                                var validRollbacks = previousStatuses
+                                .Where(s => s.Key != Model.LabOrder.Status &&
+                                Array.IndexOf(statusFlow.Keys.ToArray(), s.Key) < currentIndex)
+                                .ToList();
+
+                                if (validRollbacks.Any())
+                                {
+                                    <optgroup label="Revert to Previous">
+                                        @foreach (var status in validRollbacks)
+                                        {
+                                            <option value="@status.Key">@status.Value</option>
+                                        }
+                                    </optgroup>
+                                }
+                            }
+                        </select>
+
+                        <!-- Status Description Helper -->
+                        <div class="mt-2">
+                            <small class="text-muted" id="statusDescription">
+                                <i class="fas fa-info-circle me-1"></i>
+                                <span id="selectedStatusDesc">Select a status to see description</span>
+                            </small>
+                        </div>
+
+                        <!-- Status Icons Legend -->
+                        <div class="mt-3">
+                            <small class="text-muted d-block mb-1">Status Icons Legend:</small>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-secondary"><i class="fas fa-clock"></i> Pending</span>
+                                <span class="badge bg-info"><i class="fas fa-vial"></i> Sample Collected</span>
+                                <span class="badge bg-primary"><i class="fas fa-microscope"></i> In Progress</span>
+                                <span class="badge bg-success"><i class="fas fa-check"></i> Completed</span>
+                                <span class="badge bg-danger"><i class="fas fa-times"></i> Cancelled</span>
+                                <span class="badge bg-warning"><i class="fas fa-pause"></i> On Hold</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="statusNotes" class="form-label">Status Notes</label>
+                        <textarea class="form-control" id="statusNotes" rows="3" placeholder="Add notes about this status change..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="saveStatusUpdate">
+                    <i class="fas fa-save me-2"></i>Update Status
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusColorClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "bg-success",
+            "in progress" => "bg-primary",
+            "sample collected" => "bg-info",
+            "cancelled" => "bg-danger",
+            _ => "bg-warning"
+        };
+    }
+
+    private string GetStatusBadgeClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "bg-success",
+            "in progress" => "bg-primary",
+            "sample collected" => "bg-info",
+            "cancelled" => "bg-danger",
+            _ => "bg-warning"
+        };
+    }
+
+    private string GetPriorityBadgeClass(string? priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "high" => "bg-danger",
+            "urgent" => "bg-danger",
+            "medium" => "bg-warning",
+            "normal" => "bg-info",
+            "low" => "bg-secondary",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetTestStatusBadgeClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "bg-success",
+            "in progress" => "bg-primary",
+            "pending" => "bg-warning",
+            "cancelled" => "bg-danger",
+            "collected" => "bg-info",
+            _ => "bg-secondary"
+        };
+    }
+
+    private int CalculateAge(DateOnly birthDate)
+    {
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var age = today.Year - birthDate.Year;
+
+        // Subtract one if birthday hasn't occurred yet this year
+        return birthDate > today.AddYears(-age) ? age - 1 : age;
+    }
+
+    private string GetOrderAge(DateTime? orderDate)
+    {
+        if (!orderDate.HasValue) return "N/A";
+        
+        var age = DateTime.Now - orderDate.Value;
+        
+        if (age.TotalDays >= 1)
+            return $"{(int)age.TotalDays}d";
+        else if (age.TotalHours >= 1)
+            return $"{(int)age.TotalHours}h";
+        else
+            return $"{(int)age.TotalMinutes}m";
+    }
+}
+
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 40px;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #e0e0e0;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 30px;
+    }
+    
+    .timeline-item.completed .timeline-icon {
+        background-color: #198754;
+        color: white;
+    }
+    
+    .timeline-icon {
+        position: absolute;
+        left: -40px;
+        top: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+    }
+    
+    .timeline-content {
+        padding: 10px 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border-left: 3px solid #0d6efd;
+    }
+    
+    .avatar {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .print-only {
+        display: none;
+    }
+    
+    @@media print {
+        .no-print {
+            display: none !important;
+        }
+        
+        .print-only {
+            display: block !important;
+        }
+        
+        .card {
+            border: 1px solid #000 !important;
+        }
+        
+        .badge {
+            border: 1px solid #000 !important;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Status update functionality
+            document.getElementById('updateStatusBtn')?.addEventListener('click', function() {
+                const modal = new bootstrap.Modal(document.getElementById('statusModal'));
+                modal.show();
+            });
+
+            document.getElementById('saveStatusUpdate')?.addEventListener('click', function() {
+                const newStatus = document.getElementById('newStatus').value;
+                const statusNotes = document.getElementById('statusNotes').value;
+                
+                // In a real application, you would make an API call here
+                // For now, we'll just show a success message
+                
+                showToast(`Order status updated to "${newStatus}"`, 'success');
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('statusModal'));
+                modal.hide();
+                
+                // Refresh the page to show updated status
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            });
+
+            // Print functionality
+            document.querySelector('[onclick="window.print()"]')?.addEventListener('click', function() {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('printModal'));
+                modal.hide();
+            });
+
+            // Show toast function
+            function showToast(message, type = 'info') {
+                const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+                const toastId = 'toast-' + Date.now();
+                
+                const toastHtml = `
+                    <div id="${toastId}" class="toast align-items-center border-0 ${type === 'success' ? 'bg-success text-white' : type === 'error' ? 'bg-danger text-white' : 'bg-info text-white'}" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} me-2"></i>
+                                ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                
+                toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+                const toastElement = document.getElementById(toastId);
+                const toast = new bootstrap.Toast(toastElement);
+                toast.show();
+                
+                toastElement.addEventListener('hidden.bs.toast', function () {
+                    toastElement.remove();
+                });
+            }
+
+            function createToastContainer() {
+                const container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(container);
+                return container;
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusSelect = document.getElementById('newStatus');
+            const statusDesc = document.getElementById('selectedStatusDesc');
+
+            // Status descriptions mapping
+            const statusDescriptions = {
+                'Pending': 'Order has been created but no samples have been collected yet.',
+                'Sample Collected': 'Patient samples have been collected and are ready for testing.',
+                'In Progress': 'Lab tests are currently being processed and analyzed.',
+                'Completed': 'All tests are complete and results are available.',
+                'Cancelled': 'Order has been cancelled and will not be processed.',
+                'On Hold': 'Order processing is temporarily paused.',
+                'Selected': 'Order has been selected for processing.'  // Added this based on your original code
+            };
+
+            // Update description when selection changes
+            statusSelect.addEventListener('change', function() {
+                const selectedStatus = this.value;
+                const description = statusDescriptions[selectedStatus] || 'No description available.';
+                statusDesc.textContent = description;
+
+                // Highlight the selected option's group
+                highlightSelectedGroup();
+            });
+
+            // Function to highlight the selected group
+            function highlightSelectedGroup() {
+                // Remove previous highlights
+                document.querySelectorAll('optgroup').forEach(group => {
+                    group.style.backgroundColor = '';
+                });
+
+                // Highlight current group
+                const selectedOption = statusSelect.options[statusSelect.selectedIndex];
+                const parentGroup = selectedOption.parentElement;
+                if (parentGroup.tagName === 'OPTGROUP') {
+                    parentGroup.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
+                }
+            }
+
+            // Initialize with first option description
+            if (statusSelect.options.length > 0) {
+                const firstStatus = statusSelect.options[1]?.value; // Skip the current status option
+                if (firstStatus) {
+                    statusDesc.textContent = statusDescriptions[firstStatus] || 'No description available.';
+                }
+            }
+
+            // Add keyboard navigation improvements
+            statusSelect.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    // Optional: Trigger save action on Enter
+                    document.getElementById('saveStatusUpdate')?.click();
+                }
+            });
+
+            // Auto-focus on status dropdown when modal opens
+            const statusModal = document.getElementById('statusModal');
+            if (statusModal) {
+                statusModal.addEventListener('shown.bs.modal', function () {
+                    setTimeout(() => {
+                        statusSelect.focus();
+                    }, 100);
+                });
+            }
+
+            // Helper function to get status badge class
+            function getStatusBadgeClass(status) {
+                const classes = {
+                    'Pending': 'bg-secondary',
+                    'Sample Collected': 'bg-info',
+                    'In Progress': 'bg-primary',
+                    'Completed': 'bg-success',
+                    'Cancelled': 'bg-danger',
+                    'On Hold': 'bg-warning',
+                    'Selected': 'bg-warning'
+                };
+                return classes[status] || 'bg-secondary';
+            }
+
+            // Update preview when status changes
+            statusSelect.addEventListener('change', function() {
+                const selectedStatus = this.value;
+                const badgeClass = getStatusBadgeClass(selectedStatus);
+
+                // Update any preview elements
+                const previewElements = document.querySelectorAll('.status-preview');
+                previewElements.forEach(el => {
+                    el.className = `badge ${badgeClass} status-preview`;
+                    el.innerHTML = `<i class="fas ${getStatusIcon(selectedStatus)} me-1"></i>${selectedStatus}`;
+                });
+            });
+
+            // Helper function to get status icon
+            function getStatusIcon(status) {
+                const icons = {
+                    'Pending': 'fa-clock',
+                    'Sample Collected': 'fa-vial',
+                    'In Progress': 'fa-microscope',
+                    'Completed': 'fa-check',
+                    'Cancelled': 'fa-times',
+                    'On Hold': 'fa-pause',
+                    'Selected': 'fa-check-circle'
+                };
+                return icons[status] || 'fa-question-circle';
+            }
+        });
+    </script>
+}

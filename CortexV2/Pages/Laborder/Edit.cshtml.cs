@@ -35,8 +35,8 @@ namespace Cortex.Pages.Laborder
                 return NotFound();
             }
             LabOrder = laborder;
-           ViewData["DoctorId"] = new SelectList(_context.Staff, "StaffID", "StaffID");
-           ViewData["PatientId"] = new SelectList(_context.Patients, "PatientId", "PatientId");
+           ViewData["DoctorId"] = new SelectList(_context.Staff, "StaffID", "FirstName");
+           ViewData["PatientId"] = new SelectList(_context.Patients, "PatientId", "FirstName");
             return Page();
         }
 

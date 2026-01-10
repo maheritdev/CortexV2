@@ -2,77 +2,596 @@
 @model Cortex.Pages.Medication.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Medication";
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
 }
 
-<h1>Edit</h1>
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 text-gray-800 mb-1">Edit Medication</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-page="Index">Medications</a></li>
+                    <li class="breadcrumb-item"><a asp-page="./Details" asp-route-id="@Model.Medication.MedicationId">@Model.Medication.Name</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                </ol>
+            </nav>
+        </div>
+        <a asp-page="./Details" asp-route-id="@Model.Medication.MedicationId" class="btn btn-outline-secondary">
+            <i class="fas fa-eye me-2"></i>View Details
+        </a>
+    </div>
 
-<h4>Medication</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Medication.MedicationId" />
-            <div class="form-group">
-                <label asp-for="Medication.Name" class="control-label"></label>
-                <input asp-for="Medication.Name" class="form-control" />
-                <span asp-validation-for="Medication.Name" class="text-danger"></span>
+    <div class="row">
+        <div class="col-xl-8 col-lg-10 mx-auto">
+            <!-- Main Form Card -->
+            <div class="card shadow border-0">
+                <div class="card-header bg-warning text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-edit me-2"></i>Editing: @Model.Medication.Name
+                        </h5>
+                        <span class="badge bg-light text-dark fs-6">
+                            ID: #@Model.Medication.MedicationId.ToString("D5")
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Current Status Summary -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card border">
+                                <div class="card-body p-3 text-center">
+                                    <small class="text-muted d-block">Current Stock</small>
+                                    <h4 class="mb-0 @GetStockColorClass(Model.Medication.CurrentStock, Model.Medication.ReorderLevel)">
+                                        @(Model.Medication.CurrentStock?.ToString() ?? "0")
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border">
+                                <div class="card-body p-3 text-center">
+                                    <small class="text-muted d-block">Unit Price</small>
+                                    <h4 class="mb-0 text-success">$@Model.Medication.UnitPrice.ToString("F2")</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border">
+                                <div class="card-body p-3 text-center">
+                                    <small class="text-muted d-block">Status</small>
+                                    <span class="badge @GetStatusBadgeClass(Model.Medication.Status)">
+                                        @(Model.Medication.Status ?? "Unknown")
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none">
+                        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <h6 class="alert-heading mb-2">Please fix the following errors:</h6>
+                    </div>
+
+                    <form method="post" class="needs-validation" novalidate>
+                        <input type="hidden" asp-for="Medication.MedicationId" />
+
+                        <div class="row g-3">
+                            <!-- Basic Information Section -->
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3 border-bottom pb-2">
+                                    <i class="fas fa-info-circle me-2"></i>Basic Information
+                                </h6>
+                            </div>
+
+                            <!-- Medication Name -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.Name" class="form-label fw-semibold">
+                                    <i class="fas fa-tag text-primary me-1"></i>Brand Name *
+                                </label>
+                                <input asp-for="Medication.Name" class="form-control"
+                                       placeholder="Enter brand name" required />
+                                <span asp-validation-for="Medication.Name" class="text-danger small"></span>
+                                <div class="form-text">The commercial name of the medication</div>
+                            </div>
+
+                            <!-- Generic Name -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.GenericName" class="form-label fw-semibold">
+                                    <i class="fas fa-flask text-primary me-1"></i>Generic Name
+                                </label>
+                                <input asp-for="Medication.GenericName" class="form-control"
+                                       placeholder="Enter generic name" />
+                                <span asp-validation-for="Medication.GenericName" class="text-danger small"></span>
+                                <div class="form-text">Active pharmaceutical ingredient</div>
+                            </div>
+
+                            <!-- Manufacturer -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.Manufacturer" class="form-label fw-semibold">
+                                    <i class="fas fa-industry text-primary me-1"></i>Manufacturer
+                                </label>
+                                <input asp-for="Medication.Manufacturer" class="form-control"
+                                       placeholder="Enter manufacturer name" />
+                                <span asp-validation-for="Medication.Manufacturer" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Category -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.Category" class="form-label fw-semibold">
+                                    <i class="fas fa-folder text-primary me-1"></i>Category
+                                </label>
+                                <select asp-for="Medication.Category" class="form-select">
+                                    <option value="">Select Category</option>
+                                    <option value="Antibiotic">Antibiotic</option>
+                                    <option value="Analgesic">Analgesic</option>
+                                    <option value="Antihypertensive">Antihypertensive</option>
+                                    <option value="Antidiabetic">Antidiabetic</option>
+                                    <option value="Antidepressant">Antidepressant</option>
+                                    <option value="Antiviral">Antiviral</option>
+                                    <option value="Cardiovascular">Cardiovascular</option>
+                                    <option value="Respiratory">Respiratory</option>
+                                    <option value="Gastrointestinal">Gastrointestinal</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="Medication.Category" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Unit Type -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.UnitType" class="form-label fw-semibold">
+                                    <i class="fas fa-balance-scale text-primary me-1"></i>Unit Type
+                                </label>
+                                <select asp-for="Medication.UnitType" class="form-select">
+                                    <option value="">Select Unit Type</option>
+                                    <option value="Tablet">Tablet</option>
+                                    <option value="Capsule">Capsule</option>
+                                    <option value="Vial">Vial</option>
+                                    <option value="Ampoule">Ampoule</option>
+                                    <option value="Bottle">Bottle</option>
+                                    <option value="Tube">Tube</option>
+                                    <option value="Inhaler">Inhaler</option>
+                                    <option value="Patch">Patch</option>
+                                    <option value="Syringe">Syringe</option>
+                                </select>
+                                <span asp-validation-for="Medication.UnitType" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.Status" class="form-label fw-semibold">
+                                    <i class="fas fa-circle text-primary me-1"></i>Status
+                                </label>
+                                <select asp-for="Medication.Status" class="form-select">
+                                    <option value="">Select Status</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Discontinued">Discontinued</option>
+                                    <option value="Out of Stock">Out of Stock</option>
+                                    <option value="Low Stock">Low Stock</option>
+                                    <option value="Available">Available</option>
+                                </select>
+                                <span asp-validation-for="Medication.Status" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label asp-for="Medication.Description" class="form-label fw-semibold">
+                                    <i class="fas fa-file-alt text-primary me-1"></i>Description
+                                </label>
+                                <textarea asp-for="Medication.Description" class="form-control"
+                                          rows="3" placeholder="Enter medication description"></textarea>
+                                <span asp-validation-for="Medication.Description" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Inventory & Pricing Section -->
+                            <div class="col-12 mt-4">
+                                <h6 class="text-primary mb-3 border-bottom pb-2">
+                                    <i class="fas fa-boxes text-primary me-2"></i>Inventory & Pricing
+                                </h6>
+                            </div>
+
+                            <!-- Current Stock -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.CurrentStock" class="form-label fw-semibold">
+                                    <i class="fas fa-box text-primary me-1"></i>Current Stock
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="Medication.CurrentStock" class="form-control"
+                                           type="number" min="0" placeholder="Enter current stock" />
+                                    <span class="input-group-text">units</span>
+                                </div>
+                                <span asp-validation-for="Medication.CurrentStock" class="text-danger small"></span>
+                                <div class="form-text">Current inventory level</div>
+                            </div>
+
+                            <!-- Reorder Level -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.ReorderLevel" class="form-label fw-semibold">
+                                    <i class="fas fa-exclamation-triangle text-primary me-1"></i>Reorder Level
+                                </label>
+                                <div class="input-group">
+                                    <input asp-for="Medication.ReorderLevel" class="form-control"
+                                           type="number" min="0" placeholder="Enter reorder threshold" />
+                                    <span class="input-group-text">units</span>
+                                </div>
+                                <span asp-validation-for="Medication.ReorderLevel" class="text-danger small"></span>
+                                <div class="form-text">Alert when stock reaches this level</div>
+                            </div>
+
+                            <!-- Unit Price -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.UnitPrice" class="form-label fw-semibold">
+                                    <i class="fas fa-dollar-sign text-primary me-1"></i>Unit Price
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="Medication.UnitPrice" class="form-control"
+                                           type="number" step="0.01" min="0" placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="Medication.UnitPrice" class="text-danger small"></span>
+                                <div class="form-text">Price per unit</div>
+                            </div>
+
+                            <!-- Stock Alert Preview -->
+                            @if (Model.Medication.CurrentStock.HasValue && Model.Medication.ReorderLevel.HasValue)
+                            {
+                                <div class="col-md-6">
+                                    <div class="card h-100 @GetStockAlertClass(Model.Medication.CurrentStock.Value, Model.Medication.ReorderLevel.Value)">
+                                        <div class="card-body">
+                                            <h6 class="card-title">
+                                                <i class="fas @GetStockAlertIcon(Model.Medication.CurrentStock.Value, Model.Medication.ReorderLevel.Value) me-2"></i>
+                                                Stock Status
+                                            </h6>
+                                            <p class="card-text small mb-0">
+                                                @GetStockAlertMessage(Model.Medication.CurrentStock.Value, Model.Medication.ReorderLevel.Value)
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Form Actions -->
+                            <div class="col-12 mt-5 pt-3 border-top">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <a asp-page="./Details" asp-route-id="@Model.Medication.MedicationId"
+                                           class="btn btn-outline-secondary">
+                                            <i class="fas fa-times me-2"></i>Cancel
+                                        </a>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#resetModal">
+                                            <i class="fas fa-redo me-2"></i>Reset Changes
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Medication.GenericName" class="control-label"></label>
-                <input asp-for="Medication.GenericName" class="form-control" />
-                <span asp-validation-for="Medication.GenericName" class="text-danger"></span>
+
+            <!-- Quick Actions Card -->
+            <div class="card shadow border-0 mt-4">
+                <div class="card-header bg-light py-3">
+                    <h6 class="mb-0">
+                        <i class="fas fa-bolt text-warning me-2"></i>Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <a asp-page="./Details" asp-route-id="@Model.Medication.MedicationId"
+                               class="btn btn-outline-primary w-100">
+                                <i class="fas fa-eye me-2"></i>View Details
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-outline-success w-100" id="updateStockBtn">
+                                <i class="fas fa-plus-circle me-2"></i>Update Stock
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-outline-info w-100" id="priceHistoryBtn">
+                                <i class="fas fa-history me-2"></i>Price History
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Medication.Manufacturer" class="control-label"></label>
-                <input asp-for="Medication.Manufacturer" class="form-control" />
-                <span asp-validation-for="Medication.Manufacturer" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication.Description" class="control-label"></label>
-                <input asp-for="Medication.Description" class="form-control" />
-                <span asp-validation-for="Medication.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication.Category" class="control-label"></label>
-                <input asp-for="Medication.Category" class="form-control" />
-                <span asp-validation-for="Medication.Category" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication.UnitType" class="control-label"></label>
-                <input asp-for="Medication.UnitType" class="form-control" />
-                <span asp-validation-for="Medication.UnitType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication.UnitPrice" class="control-label"></label>
-                <input asp-for="Medication.UnitPrice" class="form-control" />
-                <span asp-validation-for="Medication.UnitPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication.ReorderLevel" class="control-label"></label>
-                <input asp-for="Medication.ReorderLevel" class="form-control" />
-                <span asp-validation-for="Medication.ReorderLevel" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication.CurrentStock" class="control-label"></label>
-                <input asp-for="Medication.CurrentStock" class="form-control" />
-                <span asp-validation-for="Medication.CurrentStock" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication.Status" class="control-label"></label>
-                <input asp-for="Medication.Status" class="form-control" />
-                <span asp-validation-for="Medication.Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-page="./Index">Back to List</a>
+<!-- Reset Changes Modal -->
+<div class="modal fade" id="resetModal" tabindex="-1" aria-labelledby="resetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resetModalLabel">
+                    <i class="fas fa-redo text-warning me-2"></i>Reset Changes
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reset all changes? This will revert the form to its original values.</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Any unsaved changes will be lost.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" id="confirmReset">
+                    <i class="fas fa-redo me-2"></i>Reset Changes
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
+<!-- Update Stock Modal -->
+<div class="modal fade" id="updateStockModal" tabindex="-1" aria-labelledby="updateStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateStockModalLabel">
+                    <i class="fas fa-boxes text-success me-2"></i>Update Stock
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="stockUpdateForm">
+                    <div class="mb-3">
+                        <label for="stockChange" class="form-label">Stock Adjustment</label>
+                        <div class="input-group">
+                            <button class="btn btn-outline-secondary" type="button" id="decreaseStock">-</button>
+                            <input type="number" class="form-control text-center" id="stockChange" value="0" min="-999" max="999">
+                            <button class="btn btn-outline-secondary" type="button" id="increaseStock">+</button>
+                        </div>
+                        <div class="form-text">Positive to add stock, negative to remove stock</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="stockReason" class="form-label">Reason for Change</label>
+                        <select class="form-select" id="stockReason">
+                            <option value="">Select reason</option>
+                            <option value="restock">Restock/Replenishment</option>
+                            <option value="sale">Sale/Dispensed</option>
+                            <option value="damaged">Damaged/Expired</option>
+                            <option value="adjustment">Inventory Adjustment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="stockNotes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="stockNotes" rows="2" placeholder="Additional notes..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="saveStockUpdate">
+                    <i class="fas fa-save me-2"></i>Update Stock
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStockColorClass(int? currentStock, int? reorderLevel)
+    {
+        if (!currentStock.HasValue || !reorderLevel.HasValue || reorderLevel == 0)
+            return "text-dark";
+
+        if (currentStock.Value <= 0)
+            return "text-danger";
+        if (currentStock.Value <= reorderLevel.Value)
+            return "text-warning";
+        return "text-success";
+    }
+
+    private string GetStatusBadgeClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "active" => "bg-success",
+            "inactive" => "bg-secondary",
+            "discontinued" => "bg-danger",
+            "out of stock" => "bg-warning",
+            "low stock" => "bg-warning",
+            "available" => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetStockAlertClass(int currentStock, int reorderLevel)
+    {
+        if (currentStock <= 0) return "border-danger bg-danger bg-opacity-10";
+        if (currentStock <= reorderLevel) return "border-warning bg-warning bg-opacity-10";
+        return "border-success bg-success bg-opacity-10";
+    }
+
+    private string GetStockAlertIcon(int currentStock, int reorderLevel)
+    {
+        if (currentStock <= 0) return "fa-times-circle text-danger";
+        if (currentStock <= reorderLevel) return "fa-exclamation-circle text-warning";
+        return "fa-check-circle text-success";
+    }
+
+    private string GetStockAlertMessage(int currentStock, int reorderLevel)
+    {
+        if (currentStock <= 0) return "Out of Stock";
+        if (currentStock <= reorderLevel) return $"Low Stock: {currentStock}/{reorderLevel}";
+        return $"Stock OK: {currentStock}/{reorderLevel}";
+    }
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form validation
+            (function () {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
+
+            // Show validation errors if any
+            const validationErrors = document.querySelector('[asp-validation-summary="ModelOnly"]');
+            if (validationErrors && validationErrors.innerHTML.trim() !== '') {
+                validationErrors.classList.remove('d-none');
+            }
+
+            // Reset form functionality
+            const originalValues = {
+                Name: '@Html.Raw(Model.Medication.Name)',
+                GenericName: '@Html.Raw(Model.Medication.GenericName ?? "")',
+                Manufacturer: '@Html.Raw(Model.Medication.Manufacturer ?? "")',
+                Description: '@Html.Raw(Model.Medication.Description ?? "")',
+                Category: '@Html.Raw(Model.Medication.Category ?? "")',
+                UnitType: '@Html.Raw(Model.Medication.UnitType ?? "")',
+                UnitPrice: '@Model.Medication.UnitPrice',
+                ReorderLevel: '@(Model.Medication.ReorderLevel?.ToString() ?? "")',
+                CurrentStock: '@(Model.Medication.CurrentStock?.ToString() ?? "")',
+                Status: '@Html.Raw(Model.Medication.Status ?? "")'
+            };
+
+            document.getElementById('confirmReset')?.addEventListener('click', function() {
+                document.querySelector('[name="Medication.Name"]').value = originalValues.Name;
+                document.querySelector('[name="Medication.GenericName"]').value = originalValues.GenericName;
+                document.querySelector('[name="Medication.Manufacturer"]').value = originalValues.Manufacturer;
+                document.querySelector('[name="Medication.Description"]').value = originalValues.Description;
+                document.querySelector('[name="Medication.Category"]').value = originalValues.Category;
+                document.querySelector('[name="Medication.UnitType"]').value = originalValues.UnitType;
+                document.querySelector('[name="Medication.UnitPrice"]').value = originalValues.UnitPrice;
+                document.querySelector('[name="Medication.ReorderLevel"]').value = originalValues.ReorderLevel;
+                document.querySelector('[name="Medication.CurrentStock"]').value = originalValues.CurrentStock;
+                document.querySelector('[name="Medication.Status"]').value = originalValues.Status;
+
+                // Reset validation state
+                document.querySelector('.needs-validation').classList.remove('was-validated');
+
+                // Close modal
+                const resetModal = bootstrap.Modal.getInstance(document.getElementById('resetModal'));
+                resetModal.hide();
+
+                // Show success message
+                showToast('Changes reset successfully', 'success');
+            });
+
+            // Update Stock modal functionality
+            document.getElementById('updateStockBtn')?.addEventListener('click', function() {
+                const modal = new bootstrap.Modal(document.getElementById('updateStockModal'));
+                modal.show();
+            });
+
+            document.getElementById('increaseStock')?.addEventListener('click', function() {
+                const input = document.getElementById('stockChange');
+                input.value = parseInt(input.value) + 1;
+            });
+
+            document.getElementById('decreaseStock')?.addEventListener('click', function() {
+                const input = document.getElementById('stockChange');
+                input.value = parseInt(input.value) - 1;
+            });
+
+            document.getElementById('saveStockUpdate')?.addEventListener('click', function() {
+                const stockChange = parseInt(document.getElementById('stockChange').value);
+                const currentStock = parseInt(document.querySelector('[name="Medication.CurrentStock"]').value || '0');
+                const newStock = currentStock + stockChange;
+
+                if (newStock < 0) {
+                    showToast('Stock cannot be negative', 'error');
+                    return;
+                }
+
+                document.querySelector('[name="Medication.CurrentStock"]').value = newStock;
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('updateStockModal'));
+                modal.hide();
+
+                showToast(`Stock updated successfully. New stock: ${newStock}`, 'success');
+            });
+
+            // Price history button
+            document.getElementById('priceHistoryBtn')?.addEventListener('click', function() {
+                showToast('Price history feature coming soon!', 'info');
+            });
+
+            // Auto-format currency input
+            const priceInput = document.querySelector('input[name="Medication.UnitPrice"]');
+            if (priceInput) {
+                priceInput.addEventListener('change', function(e) {
+                    let value = parseFloat(e.target.value);
+                    if (!isNaN(value)) {
+                        e.target.value = value.toFixed(2);
+                    }
+                });
+            }
+
+            // Show toast function
+            function showToast(message, type = 'info') {
+                const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+                const toastId = 'toast-' + Date.now();
+
+                const toastHtml = `
+                    <div id="${toastId}" class="toast align-items-center border-0 ${type === 'success' ? 'bg-success text-white' : type === 'error' ? 'bg-danger text-white' : 'bg-info text-white'}" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} me-2"></i>
+                                ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+
+                toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+                const toastElement = document.getElementById(toastId);
+                const toast = new bootstrap.Toast(toastElement);
+                toast.show();
+
+                toastElement.addEventListener('hidden.bs.toast', function () {
+                    toastElement.remove();
+                });
+            }
+
+            function createToastContainer() {
+                const container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(container);
+                return container;
+            }
+
+            // Auto-focus on first input
+            const firstInput = document.querySelector('form input:not([type="hidden"]), form select');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        });
+    </script>
+}

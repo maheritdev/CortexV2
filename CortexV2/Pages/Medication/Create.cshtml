@@ -2,65 +2,250 @@
 @model Cortex.Pages.Medication.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Medication";
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 text-gray-800 mb-1">Add New Medication</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-page="Index">Medications</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create</li>
+                </ol>
+            </nav>
+        </div>
+        <a asp-page="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
 
-<h4>Medication</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Medication.Name" class="control-label"></label>
-                <input asp-for="Medication.Name" class="form-control" />
-                <span asp-validation-for="Medication.Name" class="text-danger"></span>
+    <div class="row">
+        <div class="col-xl-8 col-lg-10 mx-auto">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-pills me-2"></i>Medication Information
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger">
+                        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <h6 class="alert-heading mb-2">Please fix the following errors:</h6>
+                    </div>
+
+                    <form method="post" class="needs-validation" novalidate>
+                        <div class="row g-3">
+                            <!-- Basic Information Section -->
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3 border-bottom pb-2">
+                                    <i class="fas fa-info-circle me-2"></i>Basic Information
+                                </h6>
+                            </div>
+
+                            <!-- Medication Name -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.Name" class="form-label fw-semibold">
+                                    <i class="fas fa-tag text-primary me-1"></i>Brand Name *
+                                </label>
+                                <input asp-for="Medication.Name" class="form-control"
+                                       placeholder="Enter brand name (e.g., Tylenol)" required />
+                                <span asp-validation-for="Medication.Name" class="text-danger small"></span>
+                                <div class="form-text">The commercial name of the medication</div>
+                            </div>
+
+                            <!-- Generic Name -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.GenericName" class="form-label fw-semibold">
+                                    <i class="fas fa-flask text-primary me-1"></i>Generic Name
+                                </label>
+                                <input asp-for="Medication.GenericName" class="form-control"
+                                       placeholder="Enter generic name (e.g., Acetaminophen)" />
+                                <span asp-validation-for="Medication.GenericName" class="text-danger small"></span>
+                                <div class="form-text">Active pharmaceutical ingredient</div>
+                            </div>
+
+                            <!-- Manufacturer -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.Manufacturer" class="form-label fw-semibold">
+                                    <i class="fas fa-industry text-primary me-1"></i>Manufacturer
+                                </label>
+                                <input asp-for="Medication.Manufacturer" class="form-control"
+                                       placeholder="Enter manufacturer name" />
+                                <span asp-validation-for="Medication.Manufacturer" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Category -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.Category" class="form-label fw-semibold">
+                                    <i class="fas fa-folder text-primary me-1"></i>Category
+                                </label>
+                                <select asp-for="Medication.Category" class="form-select">
+                                    <option value="">Select Category</option>
+                                    <option value="Antibiotic">Antibiotic</option>
+                                    <option value="Analgesic">Analgesic</option>
+                                    <option value="Antihypertensive">Antihypertensive</option>
+                                    <option value="Antidiabetic">Antidiabetic</option>
+                                    <option value="Antidepressant">Antidepressant</option>
+                                    <option value="Antiviral">Antiviral</option>
+                                    <option value="Cardiovascular">Cardiovascular</option>
+                                    <option value="Respiratory">Respiratory</option>
+                                    <option value="Gastrointestinal">Gastrointestinal</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="Medication.Category" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label asp-for="Medication.Description" class="form-label fw-semibold">
+                                    <i class="fas fa-file-alt text-primary me-1"></i>Description
+                                </label>
+                                <textarea asp-for="Medication.Description" class="form-control"
+                                          rows="3" placeholder="Enter medication description"></textarea>
+                                <span asp-validation-for="Medication.Description" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Inventory & Pricing Section -->
+                            <div class="col-12 mt-4">
+                                <h6 class="text-primary mb-3 border-bottom pb-2">
+                                    <i class="fas fa-boxes text-primary me-2"></i>Inventory & Pricing
+                                </h6>
+                            </div>
+
+                            <!-- Unit Type -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.UnitType" class="form-label fw-semibold">
+                                    <i class="fas fa-balance-scale text-primary me-1"></i>Unit Type
+                                </label>
+                                <select asp-for="Medication.UnitType" class="form-select">
+                                    <option value="">Select Unit Type</option>
+                                    <option value="Tablet">Tablet</option>
+                                    <option value="Capsule">Capsule</option>
+                                    <option value="Vial">Vial</option>
+                                    <option value="Ampoule">Ampoule</option>
+                                    <option value="Bottle">Bottle</option>
+                                    <option value="Tube">Tube</option>
+                                    <option value="Inhaler">Inhaler</option>
+                                    <option value="Patch">Patch</option>
+                                    <option value="Syringe">Syringe</option>
+                                </select>
+                                <span asp-validation-for="Medication.UnitType" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Unit Price -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.UnitPrice" class="form-label fw-semibold">
+                                    <i class="fas fa-dollar-sign text-primary me-1"></i>Unit Price
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="Medication.UnitPrice" class="form-control"
+                                           type="number" step="0.01" min="0" placeholder="0.00" />
+                                </div>
+                                <span asp-validation-for="Medication.UnitPrice" class="text-danger small"></span>
+                                <div class="form-text">Price per unit</div>
+                            </div>
+
+                            <!-- Reorder Level -->
+                            <div class="col-md-6">
+                                <label asp-for="Medication.ReorderLevel" class="form-label fw-semibold">
+                                    <i class="fas fa-exclamation-triangle text-primary me-1"></i>Reorder Level
+                                </label>
+                                <input asp-for="Medication.ReorderLevel" class="form-control"
+                                       type="number" min="0" placeholder="Enter reorder threshold" />
+                                <span asp-validation-for="Medication.ReorderLevel" class="text-danger small"></span>
+                                <div class="form-text">Alert when stock reaches this level</div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="col-12 mt-5 pt-3 border-top">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-page="Index" class="btn btn-outline-secondary px-4">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="fas fa-save me-2"></i>Create Medication
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Medication.GenericName" class="control-label"></label>
-                <input asp-for="Medication.GenericName" class="form-control" />
-                <span asp-validation-for="Medication.GenericName" class="text-danger"></span>
+
+            <!-- Help Card -->
+            <div class="card shadow border-0 mt-4">
+                <div class="card-header bg-light py-3">
+                    <h6 class="mb-0">
+                        <i class="fas fa-question-circle text-primary me-2"></i>Quick Tips
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Required Fields:</strong> Brand Name is mandatory
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            <strong>Generic Name:</strong> Helps identify the active ingredient
+                        </li>
+                        <li>
+                            <i class="fas fa-exclamation text-warning me-2"></i>
+                            <strong>Reorder Level:</strong> Set a threshold for inventory alerts
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Medication.Manufacturer" class="control-label"></label>
-                <input asp-for="Medication.Manufacturer" class="form-control" />
-                <span asp-validation-for="Medication.Manufacturer" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication.Description" class="control-label"></label>
-                <input asp-for="Medication.Description" class="form-control" />
-                <span asp-validation-for="Medication.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication.Category" class="control-label"></label>
-                <input asp-for="Medication.Category" class="form-control" />
-                <span asp-validation-for="Medication.Category" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication.UnitType" class="control-label"></label>
-                <input asp-for="Medication.UnitType" class="form-control" />
-                <span asp-validation-for="Medication.UnitType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication.UnitPrice" class="control-label"></label>
-                <input asp-for="Medication.UnitPrice" class="form-control" />
-                <span asp-validation-for="Medication.UnitPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Medication.ReorderLevel" class="control-label"></label>
-                <input asp-for="Medication.ReorderLevel" class="form-control" />
-                <span asp-validation-for="Medication.ReorderLevel" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Form validation with Bootstrap 5
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+
+        // Auto-format currency input
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceInput = document.querySelector('input[asp-for="Medication.UnitPrice"]');
+            if (priceInput) {
+                priceInput.addEventListener('change', function(e) {
+                    let value = parseFloat(e.target.value);
+                    if (!isNaN(value)) {
+                        e.target.value = value.toFixed(2);
+                    }
+                });
+            }
+
+            // Auto-focus on first input
+            const firstInput = document.querySelector('form input, form select');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        });
+    </script>
+}

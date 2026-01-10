@@ -2,38 +2,937 @@
 @model Cortex.Pages.Laborder.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Lab Order";
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 text-gray-800 mb-1">Create New Lab Order</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-page="/Dashboard/Index">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-page="Index">Lab Orders</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create New</li>
+                </ol>
+            </nav>
+        </div>
+        <a asp-page="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
 
-<h4>LabOrder</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="LabOrder.PatientId" class="control-label"></label>
-                <select asp-for="LabOrder.PatientId" class ="form-control" asp-items="ViewBag.PatientId"></select>
+    <!-- Success Message -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-xl-10 col-lg-12 mx-auto">
+            <!-- Main Form Card -->
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>New Lab Order Form
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Form Progress Steps -->
+                    <div class="steps mb-5">
+                        <div class="step active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Order Details</div>
+                        </div>
+                        <div class="step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Add Tests</div>
+                        </div>
+                        <div class="step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Review & Submit</div>
+                        </div>
+                    </div>
+
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger @(ViewData.ModelState.ErrorCount > 0 ? "" : "d-none")">
+                        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <h6 class="alert-heading mb-2">Please fix the following errors:</h6>
+                    </div>
+
+                    <form method="post" class="needs-validation" novalidate id="labOrderForm">
+                        <div class="row g-4">
+                            <!-- Step 1: Patient & Doctor Selection -->
+                            <div class="col-12 step-content" id="step1">
+                                <h6 class="text-primary mb-3 border-bottom pb-2">
+                                    <i class="fas fa-user-friends me-2"></i>Patient & Doctor Information
+                                </h6>
+
+                                <!-- Patient Selection -->
+                                <div class="col-md-6 mb-4">
+                                    <label asp-for="LabOrderInput.PatientId" class="form-label fw-semibold">
+                                        <i class="fas fa-user-injured text-primary me-1"></i>Patient *
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                        <select asp-for="LabOrderInput.PatientId" class="form-select select2-patient" required
+                                                data-live-search="true" data-placeholder="Search patient by name or ID..."
+                                                data-ajax-url="@Url.Page("Create", "PatientDetails")">
+                                            <option value="">Select Patient</option>
+                                            @if (ViewBag.PatientId != null)
+                                            {
+                                                foreach (var item in (SelectList)ViewBag.PatientId)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <span asp-validation-for="LabOrderInput.PatientId" class="text-danger small"></span>
+                                    <div class="form-text">Search and select the patient for this order</div>
+
+                                    <!-- Patient Preview -->
+                                    <div class="card border mt-2" id="patientPreview" style="display: none;">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-3">
+                                                    <i class="fas fa-user-circle fa-2x text-info"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1" id="patientNamePreview"></h6>
+                                                    <p class="text-muted small mb-0" id="patientInfoPreview"></p>
+                                                    <p class="text-muted small mb-0" id="patientContactInfo"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Doctor Selection -->
+                                <div class="col-md-6 mb-4">
+                                    <label asp-for="LabOrderInput.DoctorId" class="form-label fw-semibold">
+                                        <i class="fas fa-user-md text-primary me-1"></i>Ordering Doctor *
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-stethoscope"></i>
+                                        </span>
+                                        <select asp-for="LabOrderInput.DoctorId" class="form-select select2-doctor" required
+                                                data-live-search="true" data-placeholder="Search doctor by name or specialization..."
+                                                data-ajax-url="@Url.Page("Create", "DoctorDetails")">
+                                            <option value="">Select Doctor</option>
+                                            @if (ViewBag.DoctorId != null)
+                                            {
+                                                foreach (var item in (SelectList)ViewBag.DoctorId)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <span asp-validation-for="LabOrderInput.DoctorId" class="text-danger small"></span>
+                                    <div class="form-text">Search and select the ordering physician</div>
+
+                                    <!-- Doctor Preview -->
+                                    <div class="card border mt-2" id="doctorPreview" style="display: none;">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-3">
+                                                    <i class="fas fa-user-md fa-2x text-success"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1" id="doctorNamePreview"></h6>
+                                                    <p class="text-muted small mb-0" id="doctorInfoPreview"></p>
+                                                    <p class="text-muted small mb-0" id="doctorContactInfo"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Order Notes -->
+                                <div class="col-12 mb-4">
+                                    <label asp-for="LabOrderInput.Notes" class="form-label fw-semibold">
+                                        <i class="fas fa-sticky-note text-primary me-1"></i>Order Notes
+                                    </label>
+                                    <textarea asp-for="LabOrderInput.Notes" class="form-control" rows="4"
+                                              placeholder="Enter any notes or special instructions for this lab order..."></textarea>
+                                    <span asp-validation-for="LabOrderInput.Notes" class="text-danger small"></span>
+                                    <div class="form-text">Additional information or instructions for the lab</div>
+                                </div>
+
+                                <!-- Step 1 Navigation -->
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" class="btn btn-primary" id="nextStep1">
+                                            Next: Add Tests <i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Test Selection -->
+                            <div class="col-12 step-content" id="step2" style="display: none;">
+                                <h6 class="text-primary mb-3 border-bottom pb-2">
+                                    <i class="fas fa-vial me-2"></i>Select Lab Tests
+                                </h6>
+
+                                <!-- Test Search & Filter -->
+                                <div class="card border mb-4">
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-8">
+                                                <label for="testSearch" class="form-label">Search Tests</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-search"></i>
+                                                    </span>
+                                                    <input type="text" class="form-control" id="testSearch"
+                                                           placeholder="Search tests by name, code, or category...">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="testCategory" class="form-label">Category</label>
+                                                <select class="form-select" id="testCategory">
+                                                    <option value="">All Categories</option>
+                                                    <option value="Hematology">Hematology</option>
+                                                    <option value="Biochemistry">Biochemistry</option>
+                                                    <option value="Microbiology">Microbiology</option>
+                                                    <option value="Immunology">Immunology</option>
+                                                    <option value="Urinalysis">Urinalysis</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Available Tests -->
+                                <div class="card border mb-4">
+                                    <div class="card-header bg-light py-3">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-list me-2"></i>Available Tests (@Model.AvailableTests.Count)
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3" id="availableTests">
+                                            @foreach (var test in Model.AvailableTests)
+                                            {
+                                                <div class="col-md-6 col-lg-4 test-item"
+                                                     data-category="@test.Category"
+                                                     data-name="@test.TestName.ToLower()">
+                                                    <div class="card border test-card h-100">
+                                                        <div class="card-body">
+                                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                                <h6 class="card-title mb-0">@test.TestName</h6>
+                                                            </div>
+                                                            <p class="card-text small text-muted mb-2">
+                                                                <i class="fas fa-folder me-1"></i>@test.Category
+                                                            </p>
+                                                            <p class="card-text small mb-3">
+                                                                @test.Description?.Substring(0, Math.Min(80, test.Description?.Length ?? 0))...
+                                                            </p>
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <span class="fw-semibold">$@test.Price.ToString("F2")</span>
+                                                                </div>
+                                                                <button type="button" class="btn btn-sm btn-outline-primary add-test-btn"
+                                                                        data-test-id="@test.TestId"
+                                                                        data-test-name="@test.TestName"
+                                                                        data-test-category="@test.Category"
+                                                                        data-test-price="@test.Price"
+                                                                        data-test-description="@test.Description"
+                                                                        data-ajax-url="@Url.Page("Create", "TestDetails", new { testId = test.TestId })">
+                                                                    <i class="fas fa-plus me-1"></i>Add
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Selected Tests -->
+                                <div class="card border mb-4">
+                                    <div class="card-header bg-light py-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-check-circle me-2 text-success"></i>Selected Tests
+                                                <span class="badge bg-primary ms-2" id="selectedCount">0</span>
+                                            </h6>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" id="clearAllTests">
+                                                <i class="fas fa-trash me-1"></i>Clear All
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover" id="selectedTestsTable">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Test Name</th>
+                                                        <th>Code</th>
+                                                        <th>Category</th>
+                                                        <th>Priority</th>
+                                                        <th>Notes</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="selectedTestsBody">
+                                                    <tr id="noTestsRow">
+                                                        <td colspan="6" class="text-center text-muted py-4">
+                                                            <i class="fas fa-vial fa-2x mb-2 opacity-50"></i>
+                                                            <p class="mb-0">No tests selected yet</p>
+                                                            <small class="text-muted">Add tests from the list above</small>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Hidden fields for selected tests -->
+                                <div id="selectedTestsFields"></div>
+
+                                <!-- Step 2 Navigation -->
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn btn-outline-secondary" id="prevStep2">
+                                            <i class="fas fa-arrow-left me-2"></i>Back to Details
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="nextStep2">
+                                            Next: Review & Submit <i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Review & Submit -->
+                            <div class="col-12 step-content" id="step3" style="display: none;">
+                                <h6 class="text-primary mb-3 border-bottom pb-2">
+                                    <i class="fas fa-clipboard-check me-2"></i>Review & Submit
+                                </h6>
+
+                                <!-- Order Summary -->
+                                <div class="card border mb-4">
+                                    <div class="card-header bg-light py-3">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-file-medical me-2"></i>Order Summary
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <h6 class="text-muted mb-2">Patient Information</h6>
+                                                <div class="d-flex align-items-start">
+                                                    <div class="me-3">
+                                                        <i class="fas fa-user-circle fa-2x text-info"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h5 id="reviewPatientName" class="mb-1"></h5>
+                                                        <p class="text-muted small mb-0" id="reviewPatientInfo"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="text-muted mb-2">Doctor Information</h6>
+                                                <div class="d-flex align-items-start">
+                                                    <div class="me-3">
+                                                        <i class="fas fa-user-md fa-2x text-success"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h5 id="reviewDoctorName" class="mb-1"></h5>
+                                                        <p class="text-muted small mb-0" id="reviewDoctorInfo"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Selected Tests Summary -->
+                                        <h6 class="text-muted mb-3">Selected Tests</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Test</th>
+                                                        <th>Code</th>
+                                                        <th>Category</th>
+                                                        <th>Priority</th>
+                                                        <th>Notes</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="reviewTestsBody">
+                                                    <!-- Tests summary will be added here -->
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="4" class="text-end fw-bold">Total Tests:</td>
+                                                        <td class="fw-bold" id="reviewTotalTests">0</td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+
+                                        <!-- Order Notes Review -->
+                                        <div class="mt-4">
+                                            <h6 class="text-muted mb-2">Order Notes</h6>
+                                            <div class="card bg-light">
+                                                <div class="card-body">
+                                                    <p class="mb-0" id="reviewNotes"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Additional Options -->
+                                        <div class="mt-4">
+                                            <h6 class="text-muted mb-3">Additional Options</h6>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" asp-for="LabOrderInput.IsUrgent" id="urgentOrder">
+                                                <label class="form-check-label" for="urgentOrder">
+                                                    <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+                                                    Mark as Urgent Order
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" asp-for="LabOrderInput.SendNotification" id="sendNotification" checked>
+                                                <label class="form-check-label" for="sendNotification">
+                                                    <i class="fas fa-bell text-primary me-1"></i>
+                                                    Send notification to lab
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" asp-for="LabOrderInput.PrintOrder" id="printOrder">
+                                                <label class="form-check-label" for="printOrder">
+                                                    <i class="fas fa-print text-secondary me-1"></i>
+                                                    Print order after creation
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3 Navigation -->
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn btn-outline-secondary" id="prevStep3">
+                                            <i class="fas fa-arrow-left me-2"></i>Back to Tests
+                                        </button>
+                                        <button type="submit" class="btn btn-success" id="submitOrder">
+                                            <i class="fas fa-paper-plane me-2"></i>Create Lab Order
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="LabOrder.DoctorId" class="control-label"></label>
-                <select asp-for="LabOrder.DoctorId" class ="form-control" asp-items="ViewBag.DoctorId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="LabOrder.Notes" class="control-label"></label>
-                <input asp-for="LabOrder.Notes" class="form-control" />
-                <span asp-validation-for="LabOrder.Notes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Select2
+            $('.select2-patient').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Search patient...',
+                allowClear: true
+            });
+
+            $('.select2-doctor').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Search doctor...',
+                allowClear: true
+            });
+
+            // Store selected tests
+            let selectedTests = [];
+
+            // Step navigation
+            const steps = document.querySelectorAll('.step');
+
+            // Update patient preview with AJAX
+            $('.select2-patient').on('change', async function() {
+                const patientId = $(this).val();
+                if (!patientId) {
+                    $('#patientPreview').hide();
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`?handler=PatientDetails&patientId=${patientId}`);
+                    if (response.ok) {
+                        const patient = await response.json();
+                        $('#patientNamePreview').text(patient.fullName);
+
+                        let patientInfo = `ID: ${patient.patientId.toString().padStart(6, '0')} | `;
+                        patientInfo += `${patient.age} years | ${patient.gender}`;
+
+                        let contactInfo = '';
+                        if (patient.phoneNumber) {
+                            contactInfo += `📞 ${patient.phoneNumber}`;
+                        }
+                        if (patient.email) {
+                            if (contactInfo) contactInfo += ' | ';
+                            contactInfo += `✉️ ${patient.email}`;
+                        }
+
+                        $('#patientInfoPreview').text(patientInfo);
+                        $('#patientContactInfo').text(contactInfo);
+                        $('#patientPreview').show();
+                    }
+                } catch (error) {
+                    console.error('Error fetching patient details:', error);
+                }
+            });
+
+            // Update doctor preview with AJAX
+            $('.select2-doctor').on('change', async function() {
+                const doctorId = $(this).val();
+                if (!doctorId) {
+                    $('#doctorPreview').hide();
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`?handler=DoctorDetails&doctorId=${doctorId}`);
+                    if (response.ok) {
+                        const doctor = await response.json();
+                        $('#doctorNamePreview').text(doctor.fullName);
+
+                        let doctorInfo = '';
+                        if (doctor.specialization) {
+                            doctorInfo += doctor.specialization;
+                        }
+                        if (doctor.department) {
+                            if (doctorInfo) doctorInfo += ' | ';
+                            doctorInfo += doctor.department;
+                        }
+
+                        let contactInfo = '';
+                        if (doctor.phoneNumber) {
+                            contactInfo += `📞 ${doctor.phoneNumber}`;
+                        }
+                        if (doctor.email) {
+                            if (contactInfo) contactInfo += ' | ';
+                            contactInfo += `✉️ ${doctor.email}`;
+                        }
+
+                        $('#doctorInfoPreview').text(doctorInfo);
+                        $('#doctorContactInfo').text(contactInfo);
+                        $('#doctorPreview').show();
+                    }
+                } catch (error) {
+                    console.error('Error fetching doctor details:', error);
+                }
+            });
+
+            // Step navigation functions
+            function showStep(stepNumber) {
+                document.querySelectorAll('.step-content').forEach(step => {
+                    step.style.display = 'none';
+                });
+                document.getElementById(`step${stepNumber}`).style.display = 'block';
+                updateStepIndicators(stepNumber);
+            }
+
+            function updateStepIndicators(currentStep) {
+                steps.forEach((step, index) => {
+                    const stepNumber = parseInt(step.dataset.step);
+                    step.classList.remove('active', 'completed');
+
+                    if (stepNumber === currentStep) {
+                        step.classList.add('active');
+                    } else if (stepNumber < currentStep) {
+                        step.classList.add('completed');
+                    }
+                });
+            }
+
+            // Step click handlers
+            steps.forEach(step => {
+                step.addEventListener('click', function() {
+                    const stepNumber = parseInt(this.dataset.step);
+                    if (validateStep(stepNumber - 1)) {
+                        showStep(stepNumber);
+                    }
+                });
+            });
+
+            // Step validation
+            function validateStep(stepNumber) {
+                switch(stepNumber) {
+                    case 1:
+                        const patientSelect = document.querySelector('select[name="LabOrderInput.PatientId"]');
+                        const doctorSelect = document.querySelector('select[name="LabOrderInput.DoctorId"]');
+
+                        let isValid = true;
+
+                        if (!patientSelect.value) {
+                            patientSelect.classList.add('is-invalid');
+                            isValid = false;
+                        } else {
+                            patientSelect.classList.remove('is-invalid');
+                        }
+
+                        if (!doctorSelect.value) {
+                            doctorSelect.classList.add('is-invalid');
+                            isValid = false;
+                        } else {
+                            doctorSelect.classList.remove('is-invalid');
+                        }
+
+                        if (!isValid) {
+                            showToast('Please select both patient and doctor', 'error');
+                        }
+                        return isValid;
+
+                    case 2:
+                        if (selectedTests.length === 0) {
+                            showToast('Please add at least one test to the order', 'error');
+                            return false;
+                        }
+                        return true;
+
+                    default:
+                        return true;
+                }
+            }
+
+            // Navigation button handlers
+            document.getElementById('nextStep1').addEventListener('click', () => {
+                if (validateStep(1)) {
+                    showStep(2);
+                }
+            });
+
+            document.getElementById('nextStep2').addEventListener('click', () => {
+                if (validateStep(2)) {
+                    updateReviewSection();
+                    showStep(3);
+                }
+            });
+
+            document.getElementById('prevStep2').addEventListener('click', () => showStep(1));
+            document.getElementById('prevStep3').addEventListener('click', () => showStep(2));
+
+            // Update review section
+            function updateReviewSection() {
+                const patientName = $('#patientNamePreview').text();
+                const patientInfo = $('#patientInfoPreview').text();
+                const doctorName = $('#doctorNamePreview').text();
+                const doctorInfo = $('#doctorInfoPreview').text();
+                const notes = document.querySelector('textarea[name="LabOrderInput.Notes"]').value;
+
+                $('#reviewPatientName').text(patientName);
+                $('#reviewPatientInfo').text(patientInfo);
+                $('#reviewDoctorName').text(doctorName);
+                $('#reviewDoctorInfo').text(doctorInfo);
+                $('#reviewNotes').text(notes || 'No notes provided');
+                $('#reviewTotalTests').text(selectedTests.length);
+
+                // Update tests review table
+                const reviewTestsBody = document.getElementById('reviewTestsBody');
+                reviewTestsBody.innerHTML = '';
+
+                selectedTests.forEach(test => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${test.name}</td>
+                        <td><span class="badge bg-secondary">${test.code}</span></td>
+                        <td>${test.category}</td>
+                        <td><span class="badge ${getPriorityBadgeClass(test.priority)}">${test.priority}</span></td>
+                        <td class="small">${test.notes || '-'}</td>
+                    `;
+                    reviewTestsBody.appendChild(row);
+                });
+            }
+
+            function getPriorityBadgeClass(priority) {
+                switch(priority) {
+                    case 'Urgent': return 'bg-danger';
+                    case 'High': return 'bg-warning';
+                    default: return 'bg-info';
+                }
+            }
+
+            // Test search and filter
+            const testSearch = document.getElementById('testSearch');
+            const testCategory = document.getElementById('testCategory');
+            const testItems = document.querySelectorAll('.test-item');
+
+            testSearch.addEventListener('input', filterTests);
+            testCategory.addEventListener('change', filterTests);
+
+            function filterTests() {
+                const searchTerm = testSearch.value.toLowerCase();
+                const category = testCategory.value;
+
+                testItems.forEach(item => {
+                    const testName = item.dataset.name;
+                    const testCode = item.dataset.code || '';
+                    const testCategoryValue = item.dataset.category;
+
+                    const matchesSearch = testName.includes(searchTerm) ||
+                                         testCode.includes(searchTerm);
+                    const matchesCategory = !category || testCategoryValue === category;
+
+                    if (matchesSearch && matchesCategory) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            // Add test functionality with AJAX
+            document.querySelectorAll('.add-test-btn').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const testId = this.dataset.testId;
+
+                    // Check if already added
+                    if (selectedTests.some(test => test.id == testId)) {
+                        showToast('Test already added to order', 'info');
+                        return;
+                    }
+
+                    try {
+                        // Fetch test details
+                        const response = await fetch(`?handler=TestDetails&testId=${testId}`);
+                        if (!response.ok) throw new Error('Failed to fetch test details');
+
+                        const test = await response.json();
+
+                        // Add to selected tests
+                        selectedTests.push({
+                            id: test.testId,
+                            name: test.testName,
+                            code: test.testCode,
+                            price: test.price,
+                            category: test.category,
+                            priority: 'Normal',
+                            notes: ''
+                        });
+
+                        updateSelectedTestsTable();
+                        updateSelectedTestsFields();
+                        showToast(`"${test.testName}" added to order`, 'success');
+
+                        // Update button state
+                        this.innerHTML = '<i class="fas fa-check me-1"></i>Added';
+                        this.classList.remove('btn-outline-primary');
+                        this.classList.add('btn-success');
+                        this.disabled = true;
+                    } catch (error) {
+                        console.error('Error adding test:', error);
+                        showToast('Failed to add test. Please try again.', 'error');
+                    }
+                });
+            });
+
+            // Update selected tests table
+            function updateSelectedTestsTable() {
+                const tbody = document.getElementById('selectedTestsBody');
+                const noTestsRow = document.getElementById('noTestsRow');
+                const selectedCount = document.getElementById('selectedCount');
+
+                // Update count
+                selectedCount.textContent = selectedTests.length;
+
+                if (selectedTests.length === 0) {
+                    noTestsRow.style.display = '';
+                    tbody.innerHTML = '';
+                    tbody.appendChild(noTestsRow);
+                    return;
+                }
+
+                noTestsRow.style.display = 'none';
+                tbody.innerHTML = '';
+
+                selectedTests.forEach((test, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="fw-semibold">${test.name}</td>
+                        <td><span class="badge bg-secondary">${test.code}</span></td>
+                        <td>${test.category}</td>
+                        <td>
+                            <select class="form-select form-select-sm test-priority" data-index="${index}">
+                                <option value="Normal" ${test.priority === 'Normal' ? 'selected' : ''}>Normal</option>
+                                <option value="High" ${test.priority === 'High' ? 'selected' : ''}>High</option>
+                                <option value="Urgent" ${test.priority === 'Urgent' ? 'selected' : ''}>Urgent</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control form-control-sm test-notes"
+                                   data-index="${index}" placeholder="Notes..." value="${test.notes}">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-test"
+                                    data-index="${index}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                // Add event listeners
+                document.querySelectorAll('.test-priority').forEach(select => {
+                    select.addEventListener('change', function() {
+                        const index = this.dataset.index;
+                        selectedTests[index].priority = this.value;
+                        updateSelectedTestsFields();
+                    });
+                });
+
+                document.querySelectorAll('.test-notes').forEach(input => {
+                    input.addEventListener('input', function() {
+                        const index = this.dataset.index;
+                        selectedTests[index].notes = this.value;
+                        updateSelectedTestsFields();
+                    });
+                });
+
+                document.querySelectorAll('.remove-test').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = this.dataset.index;
+                        const testId = selectedTests[index].id;
+
+                        selectedTests.splice(index, 1);
+                        updateSelectedTestsTable();
+                        updateSelectedTestsFields();
+
+                        // Reset add button
+                        const addBtn = document.querySelector(`.add-test-btn[data-test-id="${testId}"]`);
+                        if (addBtn) {
+                            addBtn.innerHTML = '<i class="fas fa-plus me-1"></i>Add';
+                            addBtn.classList.remove('btn-success');
+                            addBtn.classList.add('btn-outline-primary');
+                            addBtn.disabled = false;
+                        }
+
+                        showToast(`Test removed from order`, 'info');
+                    });
+                });
+            }
+
+            // Update hidden fields for selected tests
+            function updateSelectedTestsFields() {
+                const container = document.getElementById('selectedTestsFields');
+                container.innerHTML = '';
+
+                selectedTests.forEach((test, index) => {
+                    // Create hidden inputs for each test property
+                    const createInput = (name, value) => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = `LabOrderInput.SelectedTests[${index}].${name}`;
+                        input.value = value;
+                        container.appendChild(input);
+                    };
+
+                    createInput('TestId', test.id);
+                    createInput('TestName', test.name);
+                    createInput('TestCode', test.code);
+                    createInput('Priority', test.priority);
+                    createInput('Notes', test.notes || '');
+                });
+            }
+
+            // Clear all tests
+            document.getElementById('clearAllTests').addEventListener('click', function() {
+                if (selectedTests.length === 0) return;
+
+                if (confirm(`Are you sure you want to remove all ${selectedTests.length} tests?`)) {
+                    // Reset all add buttons
+                    selectedTests.forEach(test => {
+                        const addBtn = document.querySelector(`.add-test-btn[data-test-id="${test.id}"]`);
+                        if (addBtn) {
+                            addBtn.innerHTML = '<i class="fas fa-plus me-1"></i>Add';
+                            addBtn.classList.remove('btn-success');
+                            addBtn.classList.add('btn-outline-primary');
+                            addBtn.disabled = false;
+                        }
+                    });
+
+                    selectedTests = [];
+                    updateSelectedTestsTable();
+                    updateSelectedTestsFields();
+                    showToast('All tests removed from order', 'info');
+                }
+            });
+
+            // Form submission
+            document.getElementById('labOrderForm').addEventListener('submit', function(e) {
+                if (selectedTests.length === 0) {
+                    e.preventDefault();
+                    showToast('Please add at least one test to the order', 'error');
+                    showStep(2);
+                    return;
+                }
+
+                // Show loading state
+                const submitBtn = document.getElementById('submitOrder');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Order...';
+                submitBtn.disabled = true;
+            });
+
+            // Show toast function
+            function showToast(message, type = 'info') {
+                const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+                const toastId = 'toast-' + Date.now();
+
+                const toastHtml = `
+                    <div id="${toastId}" class="toast align-items-center border-0 ${type === 'success' ? 'bg-success text-white' : type === 'error' ? 'bg-danger text-white' : 'bg-info text-white'}" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} me-2"></i>
+                                ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+
+                toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+                const toastElement = document.getElementById(toastId);
+                const toast = new bootstrap.Toast(toastElement);
+                toast.show();
+
+                toastElement.addEventListener('hidden.bs.toast', function () {
+                    toastElement.remove();
+                });
+            }
+
+            function createToastContainer() {
+                const container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(container);
+                return container;
+            }
+        });
+    </script>
+}
