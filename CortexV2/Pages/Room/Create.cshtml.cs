@@ -20,7 +20,7 @@ namespace Cortex.Pages.Room
 
         public IActionResult OnGet()
         {
-        ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "DepartmentId");
+        ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "DepartmentName");
             return Page();
         }
 

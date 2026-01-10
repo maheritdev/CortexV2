@@ -2,70 +2,447 @@
 @model Cortex.Pages.Inventory.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add New Inventory Item";
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-page="./Index">Inventory</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Add New Item</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-0">Add New Inventory Item</h1>
+            <p class="text-muted mb-0">Enter details for a new inventory item</p>
+        </div>
+        <div>
+            <a asp-page="./Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
 
-<h4>Inventory</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Inventory.ItemName" class="control-label"></label>
-                <input asp-for="Inventory.ItemName" class="form-control" />
-                <span asp-validation-for="Inventory.ItemName" class="text-danger"></span>
+    <!-- Main Form Card -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light py-3">
+            <div class="d-flex align-items-center">
+                <div class="icon-shape icon-md bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                    <i class="fas fa-plus fa-lg"></i>
+                </div>
+                <div>
+                    <h2 class="h4 mb-0">New Inventory Item</h2>
+                    <p class="text-muted mb-0">Fill in all required fields marked with *</p>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Inventory.Category" class="control-label"></label>
-                <input asp-for="Inventory.Category" class="form-control" />
-                <span asp-validation-for="Inventory.Category" class="text-danger"></span>
+        </div>
+
+        <form method="post" class="needs-validation" novalidate>
+            <div class="card-body">
+                <!-- Validation Summary -->
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none" role="alert" id="validationSummary">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Please correct the errors below.
+                </div>
+
+                <div class="row">
+                    <!-- Basic Information Column -->
+                    <div class="col-lg-6">
+                        <div class="card border mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Basic Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Item Name -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.ItemName" class="form-label fw-medium">
+                                        <i class="fas fa-tag text-primary me-2"></i>Item Name *
+                                    </label>
+                                    <input asp-for="Inventory.ItemName" class="form-control form-control-lg"
+                                           placeholder="Enter item name" required />
+                                    <div class="invalid-feedback">
+                                        Please provide an item name.
+                                    </div>
+                                    <span asp-validation-for="Inventory.ItemName" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Category -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.Category" class="form-label fw-medium">
+                                        <i class="fas fa-folder text-info me-2"></i>Category *
+                                    </label>
+                                    <select asp-for="Inventory.Category" class="form-select" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Medication">Medication</option>
+                                        <option value="Medical Supplies">Medical Supplies</option>
+                                        <option value="Equipment">Equipment</option>
+                                        <option value="Laboratory">Laboratory</option>
+                                        <option value="Office Supplies">Office Supplies</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select a category.
+                                    </div>
+                                    <span asp-validation-for="Inventory.Category" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.Description" class="form-label fw-medium">
+                                        <i class="fas fa-align-left text-secondary me-2"></i>Description
+                                    </label>
+                                    <textarea asp-for="Inventory.Description" class="form-control"
+                                              rows="4" placeholder="Enter item description"></textarea>
+                                    <span asp-validation-for="Inventory.Description" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Supplier -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.Supplier" class="form-label fw-medium">
+                                        <i class="fas fa-truck text-warning me-2"></i>Supplier
+                                    </label>
+                                    <input asp-for="Inventory.Supplier" class="form-control"
+                                           placeholder="Enter supplier name" />
+                                    <span asp-validation-for="Inventory.Supplier" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stock & Pricing Column -->
+                    <div class="col-lg-6">
+                        <div class="card border mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Stock & Pricing</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Unit of Measure -->
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Inventory.UnitOfMeasure" class="form-label fw-medium">
+                                            <i class="fas fa-balance-scale text-info me-2"></i>Unit of Measure *
+                                        </label>
+                                        <select asp-for="Inventory.UnitOfMeasure" class="form-select" required>
+                                            <option value="">Select Unit</option>
+                                            <option value="Each">Each</option>
+                                            <option value="Box">Box</option>
+                                            <option value="Pack">Pack</option>
+                                            <option value="Bottle">Bottle</option>
+                                            <option value="Carton">Carton</option>
+                                            <option value="Liter">Liter</option>
+                                            <option value="Kilogram">Kilogram</option>
+                                            <option value="Meter">Meter</option>
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            Please select a unit of measure.
+                                        </div>
+                                        <span asp-validation-for="Inventory.UnitOfMeasure" class="text-danger small"></span>
+                                    </div>
+
+                                    <!-- Initial Quantity -->
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Inventory.QuantityInStock" class="form-label fw-medium">
+                                            <i class="fas fa-cubes text-success me-2"></i>Initial Quantity
+                                        </label>
+                                        <input asp-for="Inventory.QuantityInStock" class="form-control"
+                                               type="number" min="0" value="0" placeholder="0" />
+                                        <span asp-validation-for="Inventory.QuantityInStock" class="text-danger small"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Reorder Level -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.ReorderLevel" class="form-label fw-medium">
+                                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>Reorder Level
+                                    </label>
+                                    <div class="input-group">
+                                        <input asp-for="Inventory.ReorderLevel" class="form-control"
+                                               type="number" min="0" placeholder="Minimum stock level" />
+                                        <span class="input-group-text unit-display">Each</span>
+                                    </div>
+                                    <div class="form-text">System will alert when stock reaches this level</div>
+                                    <span asp-validation-for="Inventory.ReorderLevel" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Unit Price -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.UnitPrice" class="form-label fw-medium">
+                                        <i class="fas fa-dollar-sign text-success me-2"></i>Unit Price
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="Inventory.UnitPrice" class="form-control"
+                                               type="number" step="0.01" min="0" placeholder="0.00" />
+                                        <span class="input-group-text price-unit-display">per Each</span>
+                                    </div>
+                                    <span asp-validation-for="Inventory.UnitPrice" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status & Dates Column -->
+                        <div class="card border">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Status & Dates</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Status -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.Status" class="form-label fw-medium">
+                                        <i class="fas fa-circle text-primary me-2"></i>Status
+                                    </label>
+                                    <select asp-for="Inventory.Status" class="form-select">
+                                        <option value="Active" selected>Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                        <option value="Out of Stock">Out of Stock</option>
+                                        <option value="Low Stock">Low Stock</option>
+                                        <option value="On Order">On Order</option>
+                                        <option value="Discontinued">Discontinued</option>
+                                    </select>
+                                    <span asp-validation-for="Inventory.Status" class="text-danger small"></span>
+                                </div>
+
+                                <div class="row">
+                                    <!-- Last Restocked Date -->
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Inventory.LastRestockedDate" class="form-label fw-medium">
+                                            <i class="fas fa-calendar-alt text-info me-2"></i>Last Restocked
+                                        </label>
+                                        <input asp-for="Inventory.LastRestockedDate" class="form-control"
+                                               type="date" id="lastRestockedDate" />
+                                        <span asp-validation-for="Inventory.LastRestockedDate" class="text-danger small"></span>
+                                    </div>
+
+                                    <!-- Last Updated (Auto-set) -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-medium">
+                                            <i class="fas fa-clock text-secondary me-2"></i>Last Updated
+                                        </label>
+                                        <input asp-for="Inventory.LastUpdated" class="form-control"
+                                               value="@DateTime.Now.ToString("yyyy-MM-dd")" type="date" readonly />
+                                        <div class="form-text">Automatically set to today</div>
+                                        <span asp-validation-for="Inventory.LastUpdated" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Help & Tips Section -->
+                <div class="alert alert-info mt-4">
+                    <div class="d-flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-lightbulb fa-2x text-info"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="alert-heading">Tips for Adding Inventory Items</h5>
+                            <ul class="mb-0">
+                                <li>Set appropriate reorder levels to receive timely alerts</li>
+                                <li>Use clear, descriptive item names for easy searching</li>
+                                <li>Select the correct category for better organization</li>
+                                <li>Include supplier information for reordering purposes</li>
+                                <li>Update stock status based on current availability</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Inventory.Description" class="control-label"></label>
-                <input asp-for="Inventory.Description" class="form-control" />
-                <span asp-validation-for="Inventory.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.UnitOfMeasure" class="control-label"></label>
-                <input asp-for="Inventory.UnitOfMeasure" class="form-control" />
-                <span asp-validation-for="Inventory.UnitOfMeasure" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.ReorderLevel" class="control-label"></label>
-                <input asp-for="Inventory.ReorderLevel" class="form-control" />
-                <span asp-validation-for="Inventory.ReorderLevel" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.UnitPrice" class="control-label"></label>
-                <input asp-for="Inventory.UnitPrice" class="form-control" />
-                <span asp-validation-for="Inventory.UnitPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.Supplier" class="control-label"></label>
-                <input asp-for="Inventory.Supplier" class="form-control" />
-                <span asp-validation-for="Inventory.Supplier" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.LastRestockedDate" class="control-label"></label>
-                <input asp-for="Inventory.LastRestockedDate" class="form-control" />
-                <span asp-validation-for="Inventory.LastRestockedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.LastUpdated" class="control-label"></label>
-                <input asp-for="Inventory.LastUpdated" class="form-control" />
-                <span asp-validation-for="Inventory.LastUpdated" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <!-- Card Footer with Action Buttons -->
+            <div class="card-footer bg-light d-flex justify-content-between py-3">
+                <div>
+                    <a asp-page="./Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary px-5">
+                        <i class="fas fa-plus-circle me-2"></i>Create Item
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" onclick="clearForm()">
+                        <i class="fas fa-redo me-2"></i>Clear Form
+                    </button>
+                </div>
             </div>
         </form>
     </div>
+
+    <!-- Quick Template Buttons -->
+    <div class="mt-4">
+        <div class="card border">
+            <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="fas fa-copy me-2"></i>Quick Templates</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">Use pre-filled templates for common items:</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="useTemplate('medication')">
+                        <i class="fas fa-pills me-1"></i>Medication
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="useTemplate('supplies')">
+                        <i class="fas fa-band-aid me-1"></i>Medical Supplies
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="useTemplate('equipment')">
+                        <i class="fas fa-stethoscope me-1"></i>Equipment
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="useTemplate('lab')">
+                        <i class="fas fa-flask me-1"></i>Laboratory
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
+@section Scripts {
+    <script>
+        // Form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+
+                            // Show validation summary
+                            document.getElementById('validationSummary').classList.remove('d-none');
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+
+        // Update unit of measure displays
+        document.getElementById('Inventory_UnitOfMeasure').addEventListener('change', function() {
+            const unit = this.value || 'Each';
+            document.querySelectorAll('.unit-display').forEach(el => {
+                el.textContent = unit;
+            });
+            document.querySelectorAll('.price-unit-display').forEach(el => {
+                el.textContent = 'per ' + unit;
+            });
+        });
+
+        // Auto-set dates
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set Last Updated to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('Inventory_LastUpdated').value = today;
+
+            // Auto-set Last Restocked Date if quantity is > 0
+            document.getElementById('Inventory_QuantityInStock').addEventListener('change', function() {
+                const quantity = parseInt(this.value) || 0;
+                const restockedDate = document.getElementById('lastRestockedDate');
+
+                if (quantity > 0 && !restockedDate.value) {
+                    restockedDate.value = today;
+                } else if (quantity === 0 && restockedDate.value === today) {
+                    restockedDate.value = '';
+                }
+            });
+        });
+
+        // Clear form function
+        function clearForm() {
+            if (confirm('Are you sure you want to clear all form fields?')) {
+                document.querySelector('form').reset();
+                document.querySelector('form').classList.remove('was-validated');
+                document.getElementById('validationSummary').classList.add('d-none');
+
+                // Reset unit displays
+                document.querySelectorAll('.unit-display').forEach(el => {
+                    el.textContent = 'Each';
+                });
+                document.querySelectorAll('.price-unit-display').forEach(el => {
+                    el.textContent = 'per Each';
+                });
+
+                // Reset dates
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('Inventory_LastUpdated').value = today;
+            }
+        }
+
+        // Template functions
+        function useTemplate(type) {
+            if (confirm('Apply template? This will overwrite current form values.')) {
+                switch(type) {
+                    case 'medication':
+                        document.getElementById('Inventory_ItemName').value = 'New Medication';
+                        document.getElementById('Inventory_Category').value = 'Medication';
+                        document.getElementById('Inventory_UnitOfMeasure').value = 'Bottle';
+                        document.getElementById('Inventory_ReorderLevel').value = '10';
+                        document.getElementById('Inventory_UnitPrice').value = '45.99';
+                        document.getElementById('Inventory_Status').value = 'Active';
+                        break;
+                    case 'supplies':
+                        document.getElementById('Inventory_ItemName').value = 'Medical Supplies';
+                        document.getElementById('Inventory_Category').value = 'Medical Supplies';
+                        document.getElementById('Inventory_UnitOfMeasure').value = 'Box';
+                        document.getElementById('Inventory_ReorderLevel').value = '5';
+                        document.getElementById('Inventory_UnitPrice').value = '29.99';
+                        document.getElementById('Inventory_Status').value = 'Active';
+                        break;
+                    case 'equipment':
+                        document.getElementById('Inventory_ItemName').value = 'Medical Equipment';
+                        document.getElementById('Inventory_Category').value = 'Equipment';
+                        document.getElementById('Inventory_UnitOfMeasure').value = 'Each';
+                        document.getElementById('Inventory_ReorderLevel').value = '2';
+                        document.getElementById('Inventory_UnitPrice').value = '499.99';
+                        document.getElementById('Inventory_Status').value = 'Active';
+                        break;
+                    case 'lab':
+                        document.getElementById('Inventory_ItemName').value = 'Lab Supplies';
+                        document.getElementById('Inventory_Category').value = 'Laboratory';
+                        document.getElementById('Inventory_UnitOfMeasure').value = 'Pack';
+                        document.getElementById('Inventory_ReorderLevel').value = '20';
+                        document.getElementById('Inventory_UnitPrice').value = '15.50';
+                        document.getElementById('Inventory_Status').value = 'Active';
+                        break;
+                }
+
+                // Trigger unit display update
+                document.getElementById('Inventory_UnitOfMeasure').dispatchEvent(new Event('change'));
+
+                alert('Template applied. Please review and adjust values as needed.');
+            }
+        }
+
+        // Auto-calculate suggested reorder level based on unit
+        document.getElementById('Inventory_UnitOfMeasure').addEventListener('change', function() {
+            const unit = this.value;
+            const reorderInput = document.getElementById('Inventory_ReorderLevel');
+
+            if (!reorderInput.value) {
+                switch(unit) {
+                    case 'Each':
+                        reorderInput.value = '5';
+                        break;
+                    case 'Box':
+                    case 'Pack':
+                        reorderInput.value = '3';
+                        break;
+                    case 'Bottle':
+                        reorderInput.value = '10';
+                        break;
+                    case 'Carton':
+                        reorderInput.value = '2';
+                        break;
+                    default:
+                        reorderInput.value = '5';
+                }
+            }
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

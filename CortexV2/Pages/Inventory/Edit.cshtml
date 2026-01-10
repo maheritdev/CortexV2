@@ -2,81 +2,426 @@
 @model Cortex.Pages.Inventory.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Inventory Item";
     Layout = "~/Pages/Shared/_DashboardLayout.cshtml";
 }
 
-<h1>Edit</h1>
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-page="./Index">Inventory</a></li>
+                    <li class="breadcrumb-item"><a asp-page="./Details" asp-route-id="@Model.Inventory.InventoryId">@Model.Inventory.ItemName</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                </ol>
+            </nav>
+            <h1 class="h3 mb-0">Edit Inventory Item</h1>
+            <p class="text-muted mb-0">Update the details for @Model.Inventory.ItemName</p>
+        </div>
+        <div>
+            <a asp-page="./Details" asp-route-id="@Model.Inventory.InventoryId" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Cancel
+            </a>
+        </div>
+    </div>
 
-<h4>Inventory</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Inventory.InventoryId" />
-            <div class="form-group">
-                <label asp-for="Inventory.ItemName" class="control-label"></label>
-                <input asp-for="Inventory.ItemName" class="form-control" />
-                <span asp-validation-for="Inventory.ItemName" class="text-danger"></span>
+    <!-- Main Form Card -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light py-3">
+            <div class="d-flex align-items-center">
+                <div class="icon-shape icon-md bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                    <i class="fas fa-edit fa-lg"></i>
+                </div>
+                <div>
+                    <h2 class="h4 mb-0">Edit @Model.Inventory.ItemName</h2>
+                    <p class="text-muted mb-0">ID: @Model.Inventory.InventoryId</p>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Inventory.Category" class="control-label"></label>
-                <input asp-for="Inventory.Category" class="form-control" />
-                <span asp-validation-for="Inventory.Category" class="text-danger"></span>
+        </div>
+
+        <form method="post" class="needs-validation" novalidate>
+            <div class="card-body">
+                <input type="hidden" asp-for="Inventory.InventoryId" />
+
+                <!-- Validation Summary -->
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Please correct the errors below.
+                </div>
+
+                <div class="row">
+                    <!-- Basic Information Column -->
+                    <div class="col-lg-6">
+                        <div class="card border mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Basic Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Item Name -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.ItemName" class="form-label fw-medium">
+                                        <i class="fas fa-tag text-primary me-2"></i>Item Name *
+                                    </label>
+                                    <input asp-for="Inventory.ItemName" class="form-control form-control-lg" placeholder="Enter item name" required />
+                                    <div class="invalid-feedback">
+                                        Please provide an item name.
+                                    </div>
+                                    <span asp-validation-for="Inventory.ItemName" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Category -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.Category" class="form-label fw-medium">
+                                        <i class="fas fa-folder text-info me-2"></i>Category
+                                    </label>
+                                    <select asp-for="Inventory.Category" class="form-select">
+                                        <option value="">Select Category</option>
+                                        <option value="Medication">Medication</option>
+                                        <option value="Medical Supplies">Medical Supplies</option>
+                                        <option value="Equipment">Equipment</option>
+                                        <option value="Laboratory">Laboratory</option>
+                                        <option value="Office Supplies">Office Supplies</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <span asp-validation-for="Inventory.Category" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.Description" class="form-label fw-medium">
+                                        <i class="fas fa-align-left text-secondary me-2"></i>Description
+                                    </label>
+                                    <textarea asp-for="Inventory.Description" class="form-control" rows="4" placeholder="Enter item description"></textarea>
+                                    <span asp-validation-for="Inventory.Description" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Supplier -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.Supplier" class="form-label fw-medium">
+                                        <i class="fas fa-truck text-warning me-2"></i>Supplier
+                                    </label>
+                                    <input asp-for="Inventory.Supplier" class="form-control" placeholder="Enter supplier name" />
+                                    <span asp-validation-for="Inventory.Supplier" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stock & Pricing Column -->
+                    <div class="col-lg-6">
+                        <div class="card border mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Stock & Pricing</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Quantity in Stock -->
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Inventory.QuantityInStock" class="form-label fw-medium">
+                                            <i class="fas fa-cubes text-success me-2"></i>Quantity in Stock
+                                        </label>
+                                        <input asp-for="Inventory.QuantityInStock" class="form-control" type="number" min="0" placeholder="0" />
+                                        <span asp-validation-for="Inventory.QuantityInStock" class="text-danger small"></span>
+                                    </div>
+
+                                    <!-- Unit of Measure -->
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Inventory.UnitOfMeasure" class="form-label fw-medium">
+                                            <i class="fas fa-balance-scale text-info me-2"></i>Unit of Measure
+                                        </label>
+                                        <select asp-for="Inventory.UnitOfMeasure" class="form-select">
+                                            <option value="">Select Unit</option>
+                                            <option value="Each">Each</option>
+                                            <option value="Box">Box</option>
+                                            <option value="Pack">Pack</option>
+                                            <option value="Bottle">Bottle</option>
+                                            <option value="Carton">Carton</option>
+                                            <option value="Liter">Liter</option>
+                                            <option value="Kilogram">Kilogram</option>
+                                            <option value="Meter">Meter</option>
+                                        </select>
+                                        <span asp-validation-for="Inventory.UnitOfMeasure" class="text-danger small"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Reorder Level -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.ReorderLevel" class="form-label fw-medium">
+                                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>Reorder Level
+                                    </label>
+                                    <div class="input-group">
+                                        <input asp-for="Inventory.ReorderLevel" class="form-control" type="number" min="0" placeholder="Minimum stock level" />
+                                        <span class="input-group-text">@Model.Inventory.UnitOfMeasure</span>
+                                    </div>
+                                    <div class="form-text">System will alert when stock reaches this level</div>
+                                    <span asp-validation-for="Inventory.ReorderLevel" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Unit Price -->
+                                <div class="mb-3">
+                                    <label asp-for="Inventory.UnitPrice" class="form-label fw-medium">
+                                        <i class="fas fa-dollar-sign text-success me-2"></i>Unit Price
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="Inventory.UnitPrice" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" />
+                                        <span class="input-group-text">per @Model.Inventory.UnitOfMeasure</span>
+                                    </div>
+                                    <span asp-validation-for="Inventory.UnitPrice" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status & Dates Column -->
+                        <div class="card border">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Status & Dates</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Status -->
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Inventory.Status" class="form-label fw-medium">
+                                            <i class="fas fa-circle text-primary me-2"></i>Status
+                                        </label>
+                                        <select asp-for="Inventory.Status" class="form-select">
+                                            <option value="">Select Status</option>
+                                            <option value="Active">Active</option>
+                                            <option value="Inactive">Inactive</option>
+                                            <option value="Out of Stock">Out of Stock</option>
+                                            <option value="Low Stock">Low Stock</option>
+                                            <option value="On Order">On Order</option>
+                                            <option value="Discontinued">Discontinued</option>
+                                        </select>
+                                        <span asp-validation-for="Inventory.Status" class="text-danger small"></span>
+                                    </div>
+
+                                    <!-- Last Restocked Date -->
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Inventory.LastRestockedDate" class="form-label fw-medium">
+                                            <i class="fas fa-calendar-alt text-info me-2"></i>Last Restocked
+                                        </label>
+                                        <input asp-for="Inventory.LastRestockedDate" class="form-control" type="date" />
+                                        <span asp-validation-for="Inventory.LastRestockedDate" class="text-danger small"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Last Updated (Read-only) -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-medium">
+                                        <i class="fas fa-clock text-secondary me-2"></i>Last Updated
+                                    </label>
+                                    <input asp-for="Inventory.LastUpdated" class="form-control" readonly />
+                                    <div class="form-text">Automatically updated when changes are saved</div>
+                                    <span asp-validation-for="Inventory.LastUpdated" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stock Level Warning (if applicable) -->
+                @if (Model.Inventory.QuantityInStock <= Model.Inventory.ReorderLevel)
+                {
+                    <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle me-3 fa-2x"></i>
+                            <div>
+                                <h5 class="alert-heading mb-1">Low Stock Warning</h5>
+                                <p class="mb-0">Current stock (@Model.Inventory.QuantityInStock) is at or below the reorder level (@Model.Inventory.ReorderLevel). Consider restocking soon.</p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
             </div>
-            <div class="form-group">
-                <label asp-for="Inventory.Description" class="control-label"></label>
-                <input asp-for="Inventory.Description" class="form-control" />
-                <span asp-validation-for="Inventory.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.QuantityInStock" class="control-label"></label>
-                <input asp-for="Inventory.QuantityInStock" class="form-control" />
-                <span asp-validation-for="Inventory.QuantityInStock" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.UnitOfMeasure" class="control-label"></label>
-                <input asp-for="Inventory.UnitOfMeasure" class="form-control" />
-                <span asp-validation-for="Inventory.UnitOfMeasure" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.ReorderLevel" class="control-label"></label>
-                <input asp-for="Inventory.ReorderLevel" class="form-control" />
-                <span asp-validation-for="Inventory.ReorderLevel" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.UnitPrice" class="control-label"></label>
-                <input asp-for="Inventory.UnitPrice" class="form-control" />
-                <span asp-validation-for="Inventory.UnitPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.Supplier" class="control-label"></label>
-                <input asp-for="Inventory.Supplier" class="form-control" />
-                <span asp-validation-for="Inventory.Supplier" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.LastRestockedDate" class="control-label"></label>
-                <input asp-for="Inventory.LastRestockedDate" class="form-control" />
-                <span asp-validation-for="Inventory.LastRestockedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.Status" class="control-label"></label>
-                <input asp-for="Inventory.Status" class="form-control" />
-                <span asp-validation-for="Inventory.Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inventory.LastUpdated" class="control-label"></label>
-                <input asp-for="Inventory.LastUpdated" class="form-control" />
-                <span asp-validation-for="Inventory.LastUpdated" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <!-- Card Footer with Action Buttons -->
+            <div class="card-footer bg-light d-flex justify-content-between py-3">
+                <div>
+                    <a asp-page="./Details" asp-route-id="@Model.Inventory.InventoryId" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="fas fa-trash me-2"></i>Delete
+                    </button>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                </div>
             </div>
         </form>
     </div>
+
+    <!-- Quick Links -->
+    <div class="mt-4">
+        <div class="d-flex gap-2">
+            <a asp-page="./Details" asp-route-id="@Model.Inventory.InventoryId" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-eye me-1"></i>View Details
+            </a>
+            <a asp-page="./Index" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-list me-1"></i>Back to Inventory List
+            </a>
+            <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#stockModal">
+                <i class="fas fa-plus-circle me-1"></i>Adjust Stock
+            </button>
+        </div>
+    </div>
 </div>
 
-<div>
-    <a asp-page="./Index">Back to List</a>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Inventory Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger mb-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> This action cannot be undone.
+                </div>
+                <p>Are you sure you want to delete <strong>@Model.Inventory.ItemName</strong>?</p>
+                <p class="text-muted small">All associated transaction records will also be removed from the system.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" asp-page-handler="Delete" asp-route-id="@Model.Inventory.InventoryId" class="d-inline">
+                    <button type="submit" class="btn btn-danger">Delete Permanently</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Stock Adjustment Modal -->
+<div class="modal fade" id="stockModal" tabindex="-1" aria-labelledby="stockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="stockModalLabel">Adjust Stock Level</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Quickly adjust the stock level for <strong>@Model.Inventory.ItemName</strong>.</p>
+
+                <div class="mb-3">
+                    <label class="form-label">Current Stock: <span class="fw-bold">@Model.Inventory.QuantityInStock @Model.Inventory.UnitOfMeasure</span></label>
+                    <div class="input-group">
+                        <select class="form-select" id="stockAction">
+                            <option value="add">Add Stock</option>
+                            <option value="remove">Remove Stock</option>
+                            <option value="set">Set Stock to</option>
+                        </select>
+                        <input type="number" class="form-control" id="stockAmount" placeholder="Amount" min="1" value="1">
+                        <span class="input-group-text">@Model.Inventory.UnitOfMeasure</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="adjustmentNotes" class="form-label">Notes (Optional)</label>
+                    <textarea class="form-control" id="adjustmentNotes" rows="2" placeholder="Reason for adjustment..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="applyStockAdjustment()">
+                    Apply Adjustment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+
+        // Stock adjustment functionality
+        function applyStockAdjustment() {
+            const action = document.getElementById('stockAction').value;
+            const amount = parseInt(document.getElementById('stockAmount').value);
+            const notes = document.getElementById('adjustmentNotes').value;
+
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            let newQuantity = @Model.Inventory.QuantityInStock;
+
+            switch (action) {
+                case 'add':
+                    newQuantity += amount;
+                    break;
+                case 'remove':
+                    newQuantity = Math.max(0, newQuantity - amount);
+                    break;
+                case 'set':
+                    newQuantity = amount;
+                    break;
+            }
+
+            // Update the form field
+            document.getElementById('Inventory_QuantityInStock').value = newQuantity;
+
+            // Show success message and close modal
+            alert(`Stock updated to ${newQuantity} @Model.Inventory.UnitOfMeasure}`);
+
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('stockModal'));
+            modal.hide();
+
+            // Update Last Restocked Date if adding stock
+            if (action === 'add' && amount > 0) {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('Inventory_LastRestockedDate').value = today;
+            }
+        }
+
+        // Update unit of measure display in price field
+        document.getElementById('Inventory_UnitOfMeasure').addEventListener('change', function() {
+            const unit = this.value;
+            document.querySelectorAll('.input-group-text:contains("per")').forEach(el => {
+                el.textContent = 'per ' + (unit || 'unit');
+            });
+        });
+
+        // Show/hide last restocked date based on status
+        document.getElementById('Inventory_Status').addEventListener('change', function() {
+            const status = this.value;
+            const restockedDateField = document.getElementById('Inventory_LastRestockedDate');
+
+            if (status === 'Out of Stock') {
+                restockedDateField.value = '';
+                restockedDateField.disabled = true;
+            } else {
+                restockedDateField.disabled = false;
+            }
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }
+    

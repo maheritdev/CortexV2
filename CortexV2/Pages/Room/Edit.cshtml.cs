@@ -35,7 +35,7 @@ namespace Cortex.Pages.Room
                 return NotFound();
             }
             Room = room;
-           ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "DepartmentId");
+           ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "DepartmentName");
             return Page();
         }
 
